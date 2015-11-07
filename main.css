@@ -1,0 +1,22 @@
+.ui-meal-button {
+    width: 60px;
+    height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.ui-icon-breakfast {
+    background-image: url(img/breakfast.png);
+}          
+.ui-icon-soup {
+    background-image: url(img/soup.png);
+}          
+.ui-icon-dinner {
+    background-image: url(img/dinner.png);
+}          
+.ui-icon-desert {
+    background-image: url(img/desert.png);
+}

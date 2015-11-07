@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <link rel="stylesheet" href="main.css">
+  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <script language="javascript" src="scripts/dish-data.js"></script>
+  <script language="javascript" src="scripts/main.js"></script>
+</head>
+<body>
+
+<div data-role="page" id="meal-selection-page">
+  <div data-role="header">
+    <h1>CookBook 05.11.2015</h1>
+  </div>
+  <div data-role="main" class="ui-content">
+    <a href="#" class="ui-btn ui-meal-button ui-icon-breakfast"></a>
+    <a href="#" class="ui-btn ui-meal-button ui-icon-soup"></a>
+    <a href="#" class="ui-btn ui-meal-button ui-icon-dinner"></a>
+    <a href="#" class="ui-btn ui-meal-button ui-icon-desert"></a>
+  </div>
+  <div data-role="footer">
+    <h1>Select meal</h1>
+  </div>
+</div> 
+
+<div data-role="page" id="dish-list-page">
+  <div data-role="header">
+    <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-back ui-btn-icon-left">Back</a>
+    <h1>Dishes</h1>
+  </div>
+  <div data-role="main" class="ui-content">
+    <ul id="dish-list" data-role="listview" data-autodividers="true" data-inset="true">
+    </ul>
+  </div>
+  <div data-role="footer">
+    <h1>Select dish</h1>
+  </div>
+</div> 
+
+<div data-role="page" id="dish-page">
+  <div data-role="header">
+    <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-back ui-btn-icon-left">Back</a>
+    <h1>Dish name</h1>
+  </div>
+  <div data-role="main" class="ui-content">
+    <img id="dish-photo" src="" alt="">
+	<h3>Skladniki</h3>
+      <ul id="dish-ingredients"></ul> 
+    <h3>Przepis</h3>
+      <ol id="dish-recipe"></ol>
+ 	<h3>Slowa kluczowe</h3>
+      <p id="dish-keywords"></p>
+  </div>
+  <div data-role="footer">
+    <h1></h1>
+  </div>
+</div> 
+
+<script>
+  $( document ).ready(function() {
+    $('.ui-icon-breakfast').on('tap', function() { showDishList('breakfast'); });
+    $('.ui-icon-soup').on('tap', function() { showDishList('soup'); });
+    $('.ui-icon-dinner').on('tap', function() { showDishList('dinner'); });
+    $('.ui-icon-desert').on('tap', function() { showDishList('desert'); });
+  });
+</script>
+
+</body>
+</html>
+
