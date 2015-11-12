@@ -9,14 +9,14 @@
     background-position: center center;
 }
 .ui-icon-breakfast {
-    background-image: url(img/breakfast.png);
+    background-image: url(images/breakfast.png);
 }          
 .ui-icon-soup {
-    background-image: url(img/soup.png);
+    background-image: url(images/soup.png);
 }          
 .ui-icon-dinner {
-    background-image: url(img/dinner.png);
+    background-image: url(images/dinner.png);
 }          
 .ui-icon-desert {
-    background-image: url(img/desert.png);
+    background-image: url(images/desert.png);
 }

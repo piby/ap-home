@@ -5,7 +5,7 @@ from django.template import RequestContext, loader
 def index(request):
     template = loader.get_template('cookbook.html')
     context = RequestContext(request, {
-        'version': '10.11.2015',
+        'version': '12.11.2015',
     })
     return HttpResponse(template.render(context))
 
