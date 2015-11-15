@@ -9,10 +9,10 @@ class IngredientUnits(models.Model):
 
 class Dish(models.Model):
     MEAL_TYPES = (
-        ('L', 'Small'),
-        ('P', 'Soup'),
-        ('R', 'Dinner'),
-        ('T', 'Desert')
+        ('B', 'Breakfast'),
+        ('S', 'Soup'),
+        ('M', 'Main'),
+        ('D', 'Desert')
     )
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
     photo = models.CharField(max_length=200)

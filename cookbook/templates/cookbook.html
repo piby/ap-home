@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="{% static "cookbook.css" %}">
   <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-  <script language="javascript" src="{% static "scripts/dish-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/main.js" %}"></script>
 </head>
 <body>
@@ -65,10 +64,10 @@
 
 <script>
   $( document ).ready(function() {
-    $('.ui-icon-breakfast').on('tap', function() { showDishList('breakfast'); });
-    $('.ui-icon-soup').on('tap', function() { showDishList('soup'); });
-    $('.ui-icon-dinner').on('tap', function() { showDishList('dinner'); });
-    $('.ui-icon-desert').on('tap', function() { showDishList('desert'); });
+    $('.ui-icon-breakfast').on('tap', function() { requestDishList('breakfast'); });
+    $('.ui-icon-soup').on('tap', function() { requestDishList('soup'); });
+    $('.ui-icon-dinner').on('tap', function() { requestDishList('dinner'); });
+    $('.ui-icon-desert').on('tap', function() { requestDishList('desert'); });
   });
 </script>
 
