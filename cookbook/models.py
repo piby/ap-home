@@ -3,8 +3,13 @@ from django.db import models
 '''
 class Ingredients(models.Model):
     name = models.CharField(max_length=50)
+	default_unit = models.ForeignKey(IngredientUnits)
+	default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
 
 class IngredientUnits(models.Model):
+    name = models.CharField(max_length=50)
+
+class Categories(models.Model):
     name = models.CharField(max_length=50)
 
 class Dish(models.Model):
@@ -15,12 +20,26 @@ class Dish(models.Model):
         ('D', 'Desert')
     )
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
-    photo = models.CharField(max_length=200)
-    ingredients = models.CharField(max_length=2000)
     reciepe = models.CharField(max_length=4000)
-    categories = models.CharField(max_length=500)
     done_count = models.IntegerField(default=0)
     last_done_date = models.DateField()
+
+class DishPhotos(models.Model):
+    dish = models.ForeignKey(Dish)
+    photo = models.CharField(max_length=200)
+    sequential_number = models.CharField(max_length=1)
+
+class DishIngredients(models.Model):
+    dish = models.ForeignKey(Dish)
+    ingredient = models.ForeignKey(Ingredients)
+	unit = models.ForeignKey(IngredientUnits)
+	quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    sequential_number = models.CharField(max_length=1)
+
+class DishCategories(models.Model):
+    dish = models.ForeignKey(Dish)
+    category = models.ForeignKey(Categories)
+    sequential_number = models.CharField(max_length=1)
 
 class MealPlan:
     date = models.DateField()
