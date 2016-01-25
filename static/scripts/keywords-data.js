@@ -14,26 +14,26 @@ function KeywordsData() {
         [7, 'szybkie', '']
 	];
 
-    this.count = function() {
+    this.count = function () {
         return this.data.length;
-    }
+    };
 
-    this.add = function(name) {
+    this.add = function (name) {
         this.data.push([999999, name, 'add']);
-    }
+    };
 
-    this.get = function(index) {
+    this.get = function (index) {
         if (index < this.count()) {
             return this.data[index][1];
         }
         return 'undefined';
-    }
+    };
 
-    this.getDatabaseFlag = function(index) {
+    this.getDatabaseFlag = function (index) {
         if (index < this.count()) {
             return this.data[index][2];
         }
         return '';
-    }
+    };
 }
 

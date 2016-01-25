@@ -14,24 +14,27 @@ function IngredientsData() {
         [4, 'papryka czerwona', 1, 'sztuka', ''],
         [5, 'papryka zielona', 1, 'sztuka', ''],
         [6, 'papryka zolta', 1, 'sztuka', ''],
-        [7, 'makaron swiderki', 0.5, 'paczka', ''],
+        [7, 'makaron swiderki', 0.5, 'paczka', '']
     ];
 
-    this.count = function() {
+    this.count = function () {
         return this.data.length;
-    }
+    };
 
-    this.add = function(name, defaultQuantity, defaultUnit) {
+    this.add = function (name, defaultQuantity, defaultUnit) {
+        var i;
         // make sure that we do not have ingredient with specified name
-        for (var i in this.data) {
-            if (this.getName(i) == name) {
-                return;
+        for (i in this.data) {
+            if (this.data.hasOwnProperty(i)) {
+                if (this.getName(i) === name) {
+                    return;
+                }
             }
         }
         this.data.push([0, name, defaultQuantity, defaultUnit, "add"]);
-    }
+    };
 
-    this.update = function(index, defaultQuantity, defaultUnit) {
+    this.update = function (index, defaultQuantity, defaultUnit) {
         if (index > this.count()) {
             return;
         }
@@ -39,14 +42,15 @@ function IngredientsData() {
         this.data[index][3] = defaultUnit;
         // mark data as updated only when it came from database,
         // we do not have to mark data that was recently localy added
-        if (this.data[index][4] == "") {
+        if (this.data[index][4] === "") {
             this.data[index][4] = "update";
         }
-    }
+    };
 
-    this.get = function(index) {
+    this.get = function (index) {
+        var ingredient;
         if (index < this.count()) {
-            var ingredient = this.data[index];
+            ingredient = this.data[index];
             return {
                 id: ingredient[0],
                 name: ingredient[1],
@@ -60,19 +64,19 @@ function IngredientsData() {
             name: "undefined",
             defaulQuantity: 1,
             defaulUnit: "sztuka",
-            defaulQuantity: false
+            serverUpdateRequired: false
         };
-    }
+    };
 
-    this.getName = function(index) {
+    this.getName = function (index) {
         return (index < this.count()) ? this.data[index][1] : "undefined";
-    }
+    };
 
-    this.getDatabaseFlag = function(index) {
+    this.getDatabaseFlag = function (index) {
         if (index < this.count()) {
             return this.data[index][4];
         }
         return '';
-    }
+    };
 }
 

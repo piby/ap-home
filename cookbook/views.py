@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext, loader
+import json
 
 def index(request):
     template = loader.get_template('cookbook.html')
@@ -70,12 +71,20 @@ def getDishData(request):
 	}
 	return JsonResponse(data)
 
-def setDish(request):
-	return HttpResponse("ok", mimetype="application/x-javascript")
+def addDishData(request):
+    #print request.body
+    general_key = 'general'
+    ingredients_key = 'ingredients'
+    recipe_key = 'recipe'
+    keywords_key = 'keywords'
+    """
+    if 'general' not in data_keys or \
+       'general' not in data_keys or \
+       'general' not in data_keys or \
+       'general' not in data_keys:
+    """
+    return JsonResponse({'result': 'ok' })
 
-"""
-def getJson(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    output = ', '.join([p.question_text for p in latest_question_list])
-    return HttpResponse(output)
-"""
+def updateDishData(request):
+    data = request.GET['data']
+    return JsonResponse({'result': 'ok' })
