@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext, loader
+from django.views.decorators.csrf import csrf_protect
 import json
 
 def index(request):
@@ -71,8 +72,9 @@ def getDishData(request):
 	}
 	return JsonResponse(data)
 
+@csrf_protect
 def addDishData(request):
-    #print request.body
+    print request.body
     general_key = 'general'
     ingredients_key = 'ingredients'
     recipe_key = 'recipe'

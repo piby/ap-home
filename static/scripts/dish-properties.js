@@ -742,8 +742,9 @@ function DishProperies() {
         $.ajax({
             type: "POST",
             url: "add-dish-data",
-            data: dishData,
-            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dishData),
+            dataType: 'text',
             error: function (data) { alert('Error'); },
             success: function (data) { self.goToHomeScreen(); }
         });
