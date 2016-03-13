@@ -19,6 +19,7 @@ class Dish(models.Model):
         ('M', 'Main'),
         ('D', 'Desert')
     )
+    name = models.CharField(max_length=150)
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
     reciepe = models.CharField(max_length=4000)
     done_count = models.IntegerField(default=0)
@@ -32,8 +33,8 @@ class DishPhotos(models.Model):
 class DishIngredients(models.Model):
     dish = models.ForeignKey(Dish)
     ingredient = models.ForeignKey(Ingredients)
-	unit = models.ForeignKey(IngredientUnits)
 	quantity = models.DecimalField(max_digits=5, decimal_places=2)
+	unit = models.ForeignKey(IngredientUnits)
     sequential_number = models.CharField(max_length=1)
 
 class DishCategories(models.Model):
