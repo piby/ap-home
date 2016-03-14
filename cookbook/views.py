@@ -74,7 +74,7 @@ def getDishData(request):
 
 @csrf_protect
 def addDishData(request):
-    print request.body
+    # print request.body
     general_key = 'general'
     ingredients_key = 'ingredients'
     recipe_key = 'recipe'
