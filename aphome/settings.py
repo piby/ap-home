@@ -20,8 +20,6 @@ SECRET_KEY = 'abcdef'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'True'
 
-TEMPLATE_DEBUG = True
-
 from socket import gethostname
 ALLOWED_HOSTS = [
     gethostname(), # For internal OpenShift load balancer security purposes.

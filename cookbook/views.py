@@ -2,6 +2,13 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext, loader
 from django.views.decorators.csrf import csrf_protect
+from django.core.exceptions import ObjectDoesNotExist
+from cookbook.models import IngredientUnit
+from cookbook.models import Ingredient
+from cookbook.models import DishIngredient
+from cookbook.models import Category
+from cookbook.models import Dish
+from datetime import date
 import json
 
 password = "1point0"
@@ -9,7 +16,7 @@ password = "1point0"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = RequestContext(request, {
-        'version': '16.11.2015',
+        'version': '18.03.2016',
     })
     return HttpResponse(template.render(context))
 
@@ -76,52 +83,130 @@ def getDishData(request):
 
 @csrf_protect
 def addDishData(request):
-    data = request.body
+    data = json.loads(request.body.decode("utf-8"))
+    print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
     general_data = data['general']
     ingredients_data = data['ingredients']
     recipe_data = data['recipe']
-    keywords_data = data['keywords']
+    categories_data = data['categories']
     # check if password is correct
-    if general_data.password != password:
-        return JsonResponse({'result': 'invalid pssword' })
+    if general_data['password'] != password:
+        return JsonResponse({'result': 'invalid pssword'})
+    # validate data
+    if not general_data['name']:
+        return JsonResponse({'result': 'missing dish name'})
+    if not ingredients_data['selected']:
+        return JsonResponse({'result': "ingredients weren't defined"})
     # create new dish
     dish = Dish(
-        name = general_data.name,
-        type = general_data.type,
-        recipe = str(recipe_data),
-        done_count = 0,
-        last_done_date = datetime.date.today() )
+        name=general_data['name'],
+        type=general_data['type'],
+        recipe=str(recipe_data),
+        done_count=0,
+        last_done_date=date(2000, 1, 1))
     dish.save()
     # process new units
-    '''
-    Algorithm:
-    - get all units
-    - iterate over new units
-    - if unit was added earlier skip it
-    - if it was not add it
-    class IngredientUnits(models.Model):
-        name = models.CharField(max_length=50)
-    '''
+    if ingredients_data['new-units']:
+        print("new units")
+        all_units = IngredientUnit.objects.values_list(
+            'base_form', flat=True)
+        all_base_forms_set = set(all_units)
+        new_units = ingredients_data['new-units']
+        new_base_forms_set = {unit[0] for unit in new_units}
+        new_base_forms_set -= all_base_forms_set
+        if new_base_forms_set:
+            for unit in new_units:
+                if unit[0] in new_base_forms_set:
+                    ingredient_unit = IngredientUnit(
+                        base_form=unit[0],
+                        fraction_form=unit[1],
+                        few_form=unit[2],
+                        many_form=unit[3])
+                    ingredient_unit.save()
     # process new ingredients definitions
-    '''
-    class Ingredients(models.Model):
-        name = models.CharField(max_length=50)
-	   default_unit = models.ForeignKey(IngredientUnits)
-	   default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
-    '''
+    if ingredients_data['new-ingredients']:
+        print("new ingredients")
+        all_ingredients = Ingredient.objects.values_list(
+            'name', flat=True)
+        all_ingredient_names_set = set(all_ingredients)
+        print(all_ingredient_names_set)
+        new_ingredients = ingredients_data['new-ingredients']
+        new_ingredient_names_set = {i[0] for i in new_ingredients}
+        new_ingredient_names_set -= all_ingredient_names_set
+        print(new_ingredient_names_set)
+        if new_ingredient_names_set:
+            for i in new_ingredients:
+                if i[0] not in new_ingredient_names_set:
+                    continue
+                try:
+                    ingredient_unit = IngredientUnit.objects.get(
+                        base_form__iexact=i[2])
+                except ObjectDoesNotExist:
+                    continue
+                ingredient = Ingredient(
+                    name=i[0],
+                    default_quantity=i[1],
+                    default_unit=ingredient_unit)
+                ingredient.save()
     # add all dish ingredients
-    index = 0
-    for ingredient in ingredients_data.selected:
-        dish_ingredient = DishIngredients(
-            dish = dish.id,
-            ingredient = ingredient[0],     # TODO: convert name to ID
-            quantity = ingredient[1],
-            unit = ingredient[2],           # TODO: convert unit to ID
-            sequential_number = index)
+    order_index = 0
+    for i in ingredients_data['selected']:
+        # find ingredient record
+        try:
+            ingredient = Ingredient.objects.get(
+                name__iexact=i[0])
+        except ObjectDoesNotExist:
+            message = "missing {0} dish ingredient".format(i[0])
+            return JsonResponse({'result': message})
+        # find ingredient unit record
+        try:
+            ingredient_unit = IngredientUnit.objects.get(
+                base_form__iexact=i[2])
+        except ObjectDoesNotExist:
+            message = "missing {0} ingredient unit".format(i[2])
+            return JsonResponse({'result': message})
+        # add dish ingredient
+        dish_ingredient = DishIngredient(
+            dish=dish,
+            ingredient=ingredient,
+            quantity=i[1],
+            unit=ingredient_unit,
+            sequential_number=order_index)
+        order_index += 1
         dish_ingredient.save()
-        index = index + 1
+    # process new category definitions
+    if categories_data['new']:
+        all_categories = Category.objects.values_list(
+            'name', flat=True)
+        all_categories_names_set = set(all_categories)
+        new_categories_names_set = set(categories_data['new'])
+        new_categories_names_set -= all_categories_names_set
+        for category_name in new_categories_names_set:
+            category = Category(name=category_name)
+            category.save()
+    # add al dish categories
+    if categories_data['selected']:
+        order_index = 0
+        for category_name in categories_data['selected']:
+            # find category record
+            try:
+                category = Category.objects.get(
+                    name__iexact=category_name)
+            except ObjectDoesNotExist:
+                continue
+            dish_category = DishCategory(
+                dish=dish,
+                category=category,
+                sequential_number=order_index)
+            order_index += 1
     return JsonResponse({'result': 'ok' })
 
 def updateDishData(request):
     data = request.GET['data']
+    return JsonResponse({'result': 'ok' })
+
+@csrf_protect
+def getIngredientsData(request):
+    all_units = IngredientUnit.objects.values_list(
+        'base_form', 'fraction_form', 'few_form', 'many_form')
     return JsonResponse({'result': 'ok' })

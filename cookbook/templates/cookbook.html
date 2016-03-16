@@ -13,7 +13,7 @@
   <script language="javascript" src="{% static "scripts/main.js" %}"></script>
   <script language="javascript" src="{% static "scripts/utils.js" %}"></script>
   <script language="javascript" src="{% static "scripts/units-data.js" %}"></script>
-  <script language="javascript" src="{% static "scripts/keywords-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/categories-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/ingredients-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-properties.js" %}"></script>
 
@@ -105,10 +105,10 @@
         <a href="#" id="edit-recipe-point-name" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
-    <div data-role="popup" id="add-keyword-popup" data-theme="a" class="ui-corner-all">
+    <div data-role="popup" id="add-category-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
-        <input id="new-keyword" value="" placeholder="Nowa kategoria" data-theme="a" type="text">
-        <a href="#" id="add-keyword" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+        <input id="new-category" value="" placeholder="Nowa kategoria" data-theme="a" type="text">
+        <a href="#" id="add-category" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
 
@@ -157,18 +157,18 @@
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
 	      <h1>Kategorie</h1>
-	      <!-- list of selected keywords -->
-	      <div id="keywords-list">
+	      <!-- list of selected categories -->
+	      <div id="categories-list">
           </div>
-          <!-- keyword finder -->
+          <!-- category finder -->
           <div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-            <input data-type="search" data-enhanced="true" data-inset="false" id="available-keywords" placeholder="Wyszukaj istniejaca kategorie" value="">
+            <input data-type="search" data-enhanced="true" data-inset="false" id="available-categories" placeholder="Wyszukaj istniejaca kategorie" value="">
           </div>
-          <div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#available-keywords" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-            <div id="all-keywords-list" class="ui-controlgroup-controls">
+          <div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#available-categories" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
+            <div id="all-categories-list" class="ui-controlgroup-controls">
             </div>
           </div>
-          <button type="button" data-icon="plus" data-iconpos="left" data-mini="true" data-inline="true" id="add-new-keyword">Dodaj nowa kategorie</button>
+          <button type="button" data-icon="plus" data-iconpos="left" data-mini="true" data-inline="true" id="add-new-category">Dodaj nowa kategorie</button>
         </div>
       </div>
 
@@ -212,12 +212,12 @@
   </div>
   <div data-role="main" class="ui-content">
     <img id="dish-photo" src="" alt="">
-	<h3>Skladniki</h3>
+      <h3>Skladniki</h3>
       <ul id="dish-ingredients"></ul>
-    <h3>Przepis</h3>
+      <h3>Przepis</h3>
       <ol id="dish-recipe"></ol>
- 	<h3>Slowa kluczowe</h3>
-      <p id="dish-keywords"></p>
+      <h3>Kategorie</h3>
+      <p id="dish-categories"></p>
   </div>
   <div data-role="footer">
     <h1></h1>
@@ -241,9 +241,9 @@
 
     var ingredientsData = new IngredientsData();
     var unitsData = new UnitsData();
-    var keywordsData = new KeywordsData();
+    var categoriesData = new CategoriesData();
     var dishPropertiesHandler = new DishProperies();
-    dishPropertiesHandler.initialize(ingredientsData, unitsData, keywordsData);
+    dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
 
 </script>
 

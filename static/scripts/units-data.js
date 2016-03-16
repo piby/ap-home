@@ -90,5 +90,15 @@ function UnitsData() {
         }
         return unit;
     }
+
+    this.getBaseForm = function(form) {
+        for (var i in this.data) {
+	    for (var j in this.data[i]) {
+	        if (this.data[i][j] == form) {
+                    return this.data[i][0];
+		}
+            }
+        }
+    }
 }
 

@@ -1,7 +1,7 @@
 
-function KeywordsData() {
+function CategoriesData() {
 
-    /// Class representing all available keywords
+    /// Class representing all available categries
     /// that can be used to categorize dishes.
 
 	this.data = [

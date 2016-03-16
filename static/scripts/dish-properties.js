@@ -190,7 +190,7 @@ function IngredientProperties() {
         this.createListOfAvailableUnits('#edit-ingredient-all-units-list', function (event) {
             var unit = $(this).html(),
                 quantity = $('#edit-ingredient-quantity').val();
-            quantity = parseInt(quantity, 10);
+            quantity = parseFloat(quantity);
             if (isNaN(quantity) || (quantity === undefined)) {
                 return;
             }
@@ -213,7 +213,7 @@ function IngredientProperties() {
                 defaultQuantity = $('#add-ingredient-quantity').val(),
                 defaultUnit = $(this).html();
             // validate data
-            defaultQuantity = parseInt(defaultQuantity, 10);
+            defaultQuantity = parseFloat(defaultQuantity);
             if (isNaN(defaultQuantity) || (defaultQuantity === undefined)) {
                 return;
             }
@@ -284,7 +284,8 @@ function IngredientProperties() {
             addedIngredientsData = [],
             dishIngredinetsArray = [],
             ingredientData,
-            dishIngredinetsHtml = $('#ingredinets-table tr');
+            dishIngredinetsHtml = $('#ingredinets-table tr'),
+	    unit;
         // get all newly added (in this sesion) units
         for (i = 0; i < this.unitsData.count(); i += 1) {
             if (this.unitsData.getDatabaseFlag(i) === 'add') {
@@ -306,10 +307,11 @@ function IngredientProperties() {
         // get all dish ingredients
         for (i = 0; i < dishIngredinetsHtml.length; i += 1) {
             ingredientData = $(dishIngredinetsHtml[i]).children();
+	    unit = this.unitsData.getBaseForm($(ingredientData[2]).text());
             dishIngredinetsArray.push([
                 $(ingredientData[0]).text(),     // name
                 $(ingredientData[1]).text(),     // quantity
-                $(ingredientData[2]).text()      // unit
+                unit			         // unit
             ]);
         }
 
@@ -594,119 +596,119 @@ function RecipeProperties() {
     };
 }
 
-function KeywordsProperties() {
+function CategoryProperties() {
 
-    /// Class encapsulating all operations related to dish keywords.
+    /// Class encapsulating all operations related to dish categories.
 
-	this.keywordsData = undefined;
+	this.categoriesData = undefined;
 
-	this.initialize = function (keywordsData) {
+	this.initialize = function (categoriesData) {
         var self = this;
-		this.keywordsData = keywordsData;
-		this.synchronizeKeywordsList();
-        $('#add-new-keyword').on('tap', function (event) { self.showAddKeywordPopup(); });
-        $('#add-keyword').on('tap', function (event) { self.addNewKeywordDefinition(); });
+		this.categoriesData = categoriesData;
+		this.synchronizeCategoriesList();
+        $('#add-new-category').on('tap', function (event) { self.showAddCategoryPopup(); });
+        $('#add-category').on('tap', function (event) { self.addNewCategoryDefinition(); });
 	};
 
-    /// Method called when list of available keywords should be updated.
-    this.synchronizeKeywordsList = function () {
+    /// Method called when list of available categorie should be updated.
+    this.synchronizeCategoriesList = function () {
         var self = this,
             classText = 'class="ui-btn ui-corner-all ui-shadow ui-screen-hidden"',
-            keywordsList = $('#all-keywords-list'),
-            itemsInHtml = keywordsList.children().length,
-            itemsInScript = this.keywordsData.count(),
-            keywordsText = '',
-            selectorString = '#all-keywords-list a',
+            categoriesList = $('#all-categories-list'),
+            itemsInHtml = categoriesList.children().length,
+            itemsInScript = this.categoriesData.count(),
+            categoriesText = '',
+            selectorString = '#all-categories-list a',
             i;
         // if there is same number of items in html as in javascript array then there is nothing to do
         if (itemsInHtml === itemsInScript) {
             return;
         }
         for (i = itemsInHtml; i < itemsInScript; i += 1) {
-            keywordsText += '<a href="#" ' + classText + '>' + this.keywordsData.get(i) + "</a>";
+            categoriesText += '<a href="#" ' + classText + '>' + this.categoriesData.get(i) + "</a>";
         }
-        keywordsList.append(keywordsText);
+        categoriesList.append(categoriesText);
         // if there already were items added then only add 'on tap' handler
         // to those who have been added during this synchronizations
         if (itemsInHtml > 0) {
             selectorString += (':gt(' + (itemsInHtml - 1) + ')');
         }
-        $(selectorString).on('tap', function (event) { self.addKeyword($(this).text()); });
+        $(selectorString).on('tap', function (event) { self.addCategory($(this).text()); });
     };
 
     /// Add keyword to the keyword list.
-    this.addKeyword = function (name) {
+    this.addCategory = function (name) {
         var self = this,
             text = '<a href="#" class="ui-btn ui-mini ui-btn-inline ui-icon-delete ui-btn-icon-left">' +
                       cleanNameString(name) +
                    '</a>',
-            keywordShouldBeAdded = true,
-            allKeywords = $('#keywords-list a'),
+            categoryShouldBeAdded = true,
+            allCategories = $('#categories-list a'),
             i = 0;
-        // check if this keywoard is not already present
-        for (i = 0; i < allKeywords.length; i += 1) {
-            if ($(allKeywords[i]).text() === name) {
-                keywordShouldBeAdded = false;
+        // check if this category is not already present
+        for (i = 0; i < allCategories.length; i += 1) {
+            if ($(allCategories[i]).text() === name) {
+                categoryShouldBeAdded = false;
                 break;
             }
         }
-        if (keywordShouldBeAdded) {
-            $('#keywords-list').append(text);
-            $('#keywords-list a:last').on('tap', function (event) { self.deleteKeyword($(this).index() + 1); });
+        if (categoryShouldBeAdded) {
+            $('#categories-list').append(text);
+            $('#categories-list a:last').on('tap', function (event) { self.deleteCategory($(this).index() + 1); });
         }
-	    $('#available-keywords').val('');
-	    $('#all-keywords-list a').addClass('ui-screen-hidden');
+	    $('#available-categories').val('');
+	    $('#all-categories-list a').addClass('ui-screen-hidden');
     };
 
-    /// Delete keyword from the keyword list.
-    this.deleteKeyword = function (index) {
-	    $('#keywords-list a:nth-child(' + index + ')').remove();
+    /// Delete category from the categories list.
+    this.deleteCategory = function (index) {
+	    $('#categories-list a:nth-child(' + index + ')').remove();
     };
 
-    /// Show popup that can be used to define new keyword.
-    this.showAddKeywordPopup = function () {
-        $('#new-keyword').val("");
-        $('#add-keyword-popup').popup('open');
+    /// Show popup that can be used to define new category.
+    this.showAddCategoryPopup = function () {
+        $('#new-category').val("");
+        $('#add-category-popup').popup('open');
     };
 
-    /// Callback used when new keyword was defined.
-    this.addNewKeywordDefinition = function () {
-        var name = $('#new-keyword').val(),
+    /// Callback used when new category was defined.
+    this.addNewCategoryDefinition = function () {
+        var name = $('#new-category').val(),
             i = 0;
-        // check if keyword already exists
-        for (i = 0; i < this.keywordsData.count(); i += 1) {
-            if (this.keywordsData.get(i) === name) {
+        // check if category already exists
+        for (i = 0; i < this.categoriesData.count(); i += 1) {
+            if (this.categoriesData.get(i) === name) {
                 return;
             }
         }
-        // add new keyword
-        this.keywordsData.add(name);
-        // update list of keywords
-        this.synchronizeKeywordsList();
-        $('#add-keyword-popup').popup('close');
+        // add new category
+        this.categoriesData.add(name);
+        // update list of categories
+        this.synchronizeCategoriesList();
+        $('#add-category-popup').popup('close');
 	};
 
     this.getContent = function () {
         var i = 0,
             edited = true,
-            keywordsHtml = [],
-            newKeywords = [],
-            selectedKeywords = [];
-        // get new keywords
-        for (i = 0; i < this.keywordsData.count(); i += 1) {
-            if (this.keywordsData.getDatabaseFlag(i) === 'add') {
-                newKeywords.push(this.keywordsData.get(i));
+            categoriesHtml = [],
+            newCategories = [],
+            selectedCategories = [];
+        // get new categories
+        for (i = 0; i < this.categoriesData.count(); i += 1) {
+            if (this.categoriesData.getDatabaseFlag(i) === 'add') {
+                newCategories.push(this.categoriesData.get(i));
             }
         }
-        // get list of selected keywords
-        keywordsHtml = $('#keywords-list a');
-        for (i = 0; i < keywordsHtml.length; i += 1) {
-            selectedKeywords.push($(keywordsHtml[i]).text());
+        // get list of selected categories
+        categoriesHtml = $('#keywords-list a');
+        for (i = 0; i < categoriesHtml.length; i += 1) {
+            selectedCategories.push($(categoriesHtml[i]).text());
         }
         return {
             'edited': edited,
-            'new': newKeywords,
-            'selected': selectedKeywords
+            'new': newCategories,
+            'selected': selectedCategories
         };
     };
 }
@@ -716,17 +718,17 @@ function DishProperies() {
     this.generalProperties = undefined;
 	this.ingredientProperties = undefined;
     this.recipeProperties = undefined;
-    this.keywordsProperties = undefined;
+    this.categoryProperties = undefined;
 
-    this.initialize = function (ingredientsData, unitsData, keywordsData) {
+    this.initialize = function (ingredientsData, unitsData, categoriesData) {
         var self = this;
         this.generalProperties = new GeneralProperties();
         this.ingredientProperties = new IngredientProperties();
         this.ingredientProperties.initialize(ingredientsData, unitsData);
         this.recipeProperties = new RecipeProperties();
         this.recipeProperties.initialize();
-        this.keywordsProperties = new KeywordsProperties();
-        this.keywordsProperties.initialize(keywordsData);
+        this.categoryProperties = new CategoryProperties();
+        this.categoryProperties.initialize(categoriesData);
 		$('#dish-defined').on('tap', function (event) { self.applyDishProperties(); });
 		$('#dish-definition-canceled').on('tap', function (event) { self.goToHomeScreen(); });
     };
@@ -737,7 +739,7 @@ function DishProperies() {
                 'general': this.generalProperties.getContent(),
                 'ingredients': this.ingredientProperties.getContent(),
                 'recipe': this.recipeProperties.getContent(),
-                'keywords': this.keywordsProperties.getContent()
+                'categories': this.categoryProperties.getContent()
             };
         $.ajax({
             type: "POST",
