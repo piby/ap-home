@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^list-dishes$', views.getDishList, name='getDishList'),
     url(r'^get-dish-data$', views.getDishData, name='getDishData'),
     url(r'^add-dish-data$', views.addDishData, name='addDishData'),
-    url(r'^update-dish-data$', views.updateDishData, name='updateDishData')
+    url(r'^update-dish-data$', views.updateDishData, name='updateDishData'),
+    url(r'^get-components$', views.getComponents, name='getComponents')
 ]

@@ -14,6 +14,10 @@ function CategoriesData() {
         [7, 'szybkie', '']
 	];
 
+    this.setData = function (data) {
+        this.data = data;
+    };
+
     this.count = function () {
         return this.data.length;
     };

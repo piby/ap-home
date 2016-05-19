@@ -285,7 +285,7 @@ function IngredientProperties() {
             dishIngredinetsArray = [],
             ingredientData,
             dishIngredinetsHtml = $('#ingredinets-table tr'),
-	    unit;
+            unit;
         // get all newly added (in this sesion) units
         for (i = 0; i < this.unitsData.count(); i += 1) {
             if (this.unitsData.getDatabaseFlag(i) === 'add') {
@@ -307,7 +307,7 @@ function IngredientProperties() {
         // get all dish ingredients
         for (i = 0; i < dishIngredinetsHtml.length; i += 1) {
             ingredientData = $(dishIngredinetsHtml[i]).children();
-	    unit = this.unitsData.getBaseForm($(ingredientData[2]).text());
+            unit = this.unitsData.getBaseForm($(ingredientData[2]).text());
             dishIngredinetsArray.push([
                 $(ingredientData[0]).text(),     // name
                 $(ingredientData[1]).text(),     // quantity

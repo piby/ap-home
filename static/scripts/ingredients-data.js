@@ -17,6 +17,10 @@ function IngredientsData() {
         [7, 'makaron swiderki', 0.5, 'paczka', '']
     ];
 
+    this.setData = function (data) {
+        this.data = data;
+    };
+
     this.count = function () {
         return this.data.length;
     };

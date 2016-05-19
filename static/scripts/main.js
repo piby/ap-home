@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString*/
+/*global $, jQuery, alert, cleanNameString, showDishList, requestDishData, showDishData*/
 
 // TO read: https://jslinterrors.com/the-body-of-a-for-in-should-be-wrapped-in-an-if-statement
 

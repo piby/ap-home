@@ -9,7 +9,7 @@ String.prototype.format = String.prototype.f = function () {
     return s;
 };
 
-function isFlaot(value) {
+function isFloat(value) {
     return (value === +value) && (value !== (value | 0));
 }
 

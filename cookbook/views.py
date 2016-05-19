@@ -15,10 +15,10 @@ password = "1point0"
 
 def index(request):
     template = loader.get_template('cookbook.html')
-    context = RequestContext(request, {
-        'version': '18.03.2016',
-    })
-    return HttpResponse(template.render(context))
+    context = {
+        'version': '20.05.2016',
+    }
+    return HttpResponse(template.render(context, request))
 
 def getDishList(request):
 	meal = request.GET['meal']
@@ -184,7 +184,7 @@ def addDishData(request):
         for category_name in new_categories_names_set:
             category = Category(name=category_name)
             category.save()
-    # add al dish categories
+    # add all dish categories
     if categories_data['selected']:
         order_index = 0
         for category_name in categories_data['selected']:
@@ -206,7 +206,23 @@ def updateDishData(request):
     return JsonResponse({'result': 'ok' })
 
 @csrf_protect
-def getIngredientsData(request):
-    all_units = IngredientUnit.objects.values_list(
-        'base_form', 'fraction_form', 'few_form', 'many_form')
-    return JsonResponse({'result': 'ok' })
+def getComponents(request):
+    """Get data that is needed to add/update dishes. This can include
+    all ingredients, all ingredient units and all categories"""
+    all_units = []
+    all_ingredients = []
+    all_categories = []
+    if request.GET['units']:
+        all_units = IngredientUnit.objects.values_list(
+            'id', 'base_form', 'fraction_form', 'few_form', 'many_form')
+    if request.GET['ingredients']:
+        all_ingredients = Ingredient.objects.values_list(
+            'id', 'name', 'default_quantity', 'default_unit')
+    if request.GET['categories']:
+        all_categories = Category.objects.values_list('id', 'name')
+    data = {
+        'units': all_units,
+        'ingredients': all_ingredients,
+        'categories': all_categories
+    }
+    return JsonResponse(data)
