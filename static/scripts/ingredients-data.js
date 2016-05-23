@@ -1,21 +1,14 @@
 
 
 function IngredientsData() {
+    "use strict";
 
     /// Class containing list of all ingredients that can be used in dish.
 
     /// Representation of data that is stored in database. Every item in
     /// array consists of database ID's, ingredient name, default quantity,
     /// default unit, and operation flag.
-    this.data = [
-        [1, 'ogorek gruntowy', 1, 'sztuka', ''],
-        [2, 'ogorek szklarniowy', 1, 'sztuka', ''],
-        [3, 'cebula', 1, 'sztuka', ''],
-        [4, 'papryka czerwona', 1, 'sztuka', ''],
-        [5, 'papryka zielona', 1, 'sztuka', ''],
-        [6, 'papryka zolta', 1, 'sztuka', ''],
-        [7, 'makaron swiderki', 0.5, 'paczka', '']
-    ];
+    this.data = [];
 
     this.setData = function (data) {
         this.data = data;
@@ -25,7 +18,17 @@ function IngredientsData() {
         return this.data.length;
     };
 
-    this.add = function (name, defaultQuantity, defaultUnit) {
+    this.index = function (name) {
+        var i;
+        for (i in this.data) {
+            if (this.data.hasOwnProperty(i) && (this.data[i][1] === name)) {
+                return i;
+            }
+        }
+        return undefined;
+    };
+
+    this.add = function (id, name, defaultQuantity, defaultUnit, flag) {
         var i;
         // make sure that we do not have ingredient with specified name
         for (i in this.data) {
@@ -35,7 +38,16 @@ function IngredientsData() {
                 }
             }
         }
-        this.data.push([0, name, defaultQuantity, defaultUnit, "add"]);
+        this.data.push([id, name, defaultQuantity, defaultUnit, flag]);
+    };
+
+    this.updateId = function (name, id) {
+        var index = this.index(name);
+        if (index === undefined) {
+            return;
+        }
+        this.data[index][0] = id;
+        this.data[index][4] = '';
     };
 
     this.update = function (index, defaultQuantity, defaultUnit) {

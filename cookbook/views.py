@@ -83,6 +83,9 @@ def getDishData(request):
 
 @csrf_protect
 def addDishData(request):
+    new_units = []
+    new_ingredients = []
+    new_categories = []
     data = json.loads(request.body.decode("utf-8"))
     print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
     general_data = data['general']
@@ -123,6 +126,9 @@ def addDishData(request):
                         few_form=unit[2],
                         many_form=unit[3])
                     ingredient_unit.save()
+                    new_units.append({
+                        'id': ingredient_unit.id,
+                        'name': ingredient_unit.base_form})
     # process new ingredients definitions
     if ingredients_data['new-ingredients']:
         print("new ingredients")
@@ -148,6 +154,9 @@ def addDishData(request):
                     default_quantity=i[1],
                     default_unit=ingredient_unit)
                 ingredient.save()
+                new_ingredients.append({
+                    'id': ingredient.id,
+                    'name': ingredient.name})
     # add all dish ingredients
     order_index = 0
     for i in ingredients_data['selected']:
@@ -184,6 +193,9 @@ def addDishData(request):
         for category_name in new_categories_names_set:
             category = Category(name=category_name)
             category.save()
+            new_categories.append({
+                'id': category.id,
+                'name': category.name})
     # add all dish categories
     if categories_data['selected']:
         order_index = 0
@@ -199,11 +211,14 @@ def addDishData(request):
                 category=category,
                 sequential_number=order_index)
             order_index += 1
-    return JsonResponse({'result': 'ok' })
+    return JsonResponse({'result': 'ok',
+            'new_units': new_units,
+            'new_ingredients': new_ingredients,
+            'new_categories': new_categories})
 
 def updateDishData(request):
     data = request.GET['data']
-    return JsonResponse({'result': 'ok' })
+    return JsonResponse({'result': 'ok'})
 
 @csrf_protect
 def getComponents(request):

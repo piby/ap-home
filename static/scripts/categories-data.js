@@ -1,18 +1,11 @@
 
 function CategoriesData() {
+    "use strict";
 
     /// Class representing all available categries
     /// that can be used to categorize dishes.
 
-	this.data = [
-        [1, 'smazone', ''],
-        [2, 'pieczone', ''],
-        [3, 'gotowane', ''],
-        [4, 'dobry sos', ''],
-        [5, 'proste', ''],
-        [6, 'skaplikowane', ''],
-        [7, 'szybkie', '']
-	];
+	this.data = [];
 
     this.setData = function (data) {
         this.data = data;
@@ -22,8 +15,27 @@ function CategoriesData() {
         return this.data.length;
     };
 
-    this.add = function (name) {
-        this.data.push([999999, name, 'add']);
+    this.index = function (category) {
+        var i;
+        for (i in this.data) {
+            if (this.data.hasOwnProperty(i) && (this.data[i][1] === category)) {
+                return i;
+            }
+        }
+        return undefined;
+    };
+
+    this.add = function (id, name, flag) {
+        this.data.push([id, name, flag]);
+    };
+
+    this.updateId = function (category, id) {
+        var index = this.index(category);
+        if (index === undefined) {
+            return;
+        }
+        this.data[index][0] = id;
+        this.data[index][2] = '';
     };
 
     this.get = function (index) {

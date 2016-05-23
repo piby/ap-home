@@ -2,26 +2,13 @@
 /*global endsWithCharacter */
 
 function UnitsData() {
+    "use strict";
 
     /// Class representing all available units that can be used
     /// to describe amount of ingredients needed to prepare recipe.
 
-	this.data = [
-		//id, jeden, pol, trzy, dwadziescia piec, database flag
-		[0, 'butelka', 'butelki', 'butelki', 'butelek', ''],
-		[1, 'sloik', 'sloika', 'sloiki', 'sloikow', ''],
-		[2, 'sztuka', 'sztuki', 'sztuki', 'sztuk', ''],
-		[3, 'szklanka', 'szklanki', 'szklanki', 'szklanek', ''],
-		[4, 'litr', 'litra', 'litry', 'litrow', ''],
-		[5, 'lyzka', 'lyzki', 'lyzki', 'lyzek', ''],
-		[6, 'lyzeczka', 'lyzeczki', 'lyzeczki', 'lyzeczek', ''],
-		[7, 'paczka', 'paczki', 'paczki', 'paczek', ''],
-		[8, 'puszka', 'puszki', 'puszki', 'puszek', ''],
-		[9, 'opakowanie', 'opakowania', 'opakowania', 'opakowan', ''],
-		[10, 'worek', 'worka', 'worki', 'workow', ''],
-		[11, 'kilogram', 'kilograma', 'kilogramy', 'kilogramow', ''],
-		[12, 'karton', 'kartonu', 'kartony', 'kartonow', '']
-	];
+    //id, jeden, pol, trzy, dwadziescia piec, database flag
+	this.data = [];
 
     this.setData = function (data) {
         this.data = data;
@@ -31,15 +18,32 @@ function UnitsData() {
         return this.data.length;
     };
 
-    this.add = function (one, half, three, twentyfive) {
+    this.index = function (unit) {
         var i;
-        // make sure that we do not have already unit with specified name
+        // find index of specidief unit
         for (i in this.data) {
-            if (this.data.hasOwnProperty(i) && (this.name(i) === one)) {
-                return;
+            if (this.data.hasOwnProperty(i) && (this.data[i][1] === unit)) {
+                return i;
             }
         }
-        this.data.push([999999, one, half, three, twentyfive, 'add']);
+        return undefined;
+    };
+
+    this.add = function (id, one, half, three, twentyfive, flag) {
+        var i;
+        // make sure that we do not have already unit with specified name
+        if (this.index(one) === undefined) {
+            this.data.push([id, one, half, three, twentyfive, flag]);
+        }
+    };
+
+    this.updateId = function (unit, id) {
+        var index = this.index(unit);
+        if (index === undefined) {
+            return;
+        }
+        this.data[index][0] = id;
+        this.data[index][5] = '';
     };
 
     this.name = function (index) {
@@ -69,16 +73,8 @@ function UnitsData() {
     };
 
     this.decline = function (unit, quantity) {
-        var index,
-            i,
+        var index = this.index(unit),
             forms;
-        // find index of specidief unit
-        for (i in this.data) {
-            if (this.data.hasOwnProperty(i) && (this.data[i][1] === unit)) {
-                index = i;
-                break;
-            }
-        }
         // return unit if index was not found
         if (index === undefined) {
             return unit;

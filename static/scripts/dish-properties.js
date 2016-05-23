@@ -1,8 +1,8 @@
-"use strict";
 /*jslint browser: true*/
 /*global $, jQuery, alert, cleanNameString*/
 
 function GeneralProperties() {
+    "use strict";
 
     this.getContent = function () {
         var edited = true,
@@ -40,6 +40,7 @@ function GeneralProperties() {
 }
 
 function IngredientProperties() {
+    "use strict";
 
     /// Class encapsulating all operations related to dish ingredients.
 
@@ -255,7 +256,13 @@ function IngredientProperties() {
             }
         }
         // add new ingredient
-        this.ingredientsData.add(cleanNameString(name), defaultQuantity, defaultUnit);
+        this.ingredientsData.add(
+            -1,
+            cleanNameString(name),
+            defaultQuantity,
+            defaultUnit,
+            'add'
+        );
         // update list of ingredients
         this.synchronizeIngredientList();
 	};
@@ -268,10 +275,12 @@ function IngredientProperties() {
             three = $(forms[2]).val(),
             twentyfive = $(forms[3]).val();
         this.unitsData.add(
+            -1,
             cleanNameString(one),
             cleanNameString(half),
             cleanNameString(three),
-            cleanNameString(twentyfive)
+            cleanNameString(twentyfive),
+            'add'
         );
         $('#add-ingredient-unit-popup').popup('close');
 	};
@@ -311,7 +320,7 @@ function IngredientProperties() {
             dishIngredinetsArray.push([
                 $(ingredientData[0]).text(),     // name
                 $(ingredientData[1]).text(),     // quantity
-                unit			         // unit
+                unit			                 // unit
             ]);
         }
 
@@ -325,6 +334,7 @@ function IngredientProperties() {
 }
 
 function RecipeProperties() {
+    "use strict";
 
     /// Class encapsulating all operations related to dish recipe.
 
@@ -597,6 +607,7 @@ function RecipeProperties() {
 }
 
 function CategoryProperties() {
+    "use strict";
 
     /// Class encapsulating all operations related to dish categories.
 
@@ -682,7 +693,7 @@ function CategoryProperties() {
             }
         }
         // add new category
-        this.categoriesData.add(name);
+        this.categoriesData.add(-1, name, 'add');
         // update list of categories
         this.synchronizeCategoriesList();
         $('#add-category-popup').popup('close');
@@ -714,6 +725,11 @@ function CategoryProperties() {
 }
 
 function DishProperies() {
+    "use strict";
+
+    this.ingredientsData  = undefined;
+    this.unitsData  = undefined;
+    this.categoriesData  = undefined;
 
     this.generalProperties = undefined;
 	this.ingredientProperties = undefined;
@@ -722,6 +738,9 @@ function DishProperies() {
 
     this.initialize = function (ingredientsData, unitsData, categoriesData) {
         var self = this;
+        this.ingredientsData  = ingredientsData;
+        this.unitsData  = unitsData;
+        this.categoriesData  = categoriesData;
         this.generalProperties = new GeneralProperties();
         this.ingredientProperties = new IngredientProperties();
         this.ingredientProperties.initialize(ingredientsData, unitsData);
@@ -748,10 +767,33 @@ function DishProperies() {
             data: JSON.stringify(dishData),
             dataType: 'text',
             error: function (data) { alert('Error'); },
-            success: function (data) { self.goToHomeScreen(); }
+            success: function (data) { self.applyNewComponents(data); }
         });
     };
     
+    this.applyNewComponents = function (data) {
+        var component;
+        if (data.result === "ok") {
+            // apply ids to components that were just added to database on the server
+            for (component in data.new_units) {
+                if (this.unitsData.hasOwnProperty(component)) {
+                    this.unitsData.updateId(component.name, component.id);
+                }
+            }
+            for (component in data.new_ingredients) {
+                if (this.ingredientsData.hasOwnProperty(component)) {
+                    this.ingredientsData.updateId(component.name, component.id);
+                }
+            }
+            for (component in data.categoriesData) {
+                if (this.data.hasOwnProperty(component)) {
+                    this.categoriesData.updateId(component.name, component.id);
+                }
+            }
+        }
+        this.goToHomeScreen();
+    };
+
     this.goToHomeScreen = function () {
         $.mobile.changePage("#meal-selection-page");
     };

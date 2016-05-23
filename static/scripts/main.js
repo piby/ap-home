@@ -1,10 +1,8 @@
-'use strict';
 /*jslint browser: true*/
 /*global $, jQuery, alert, cleanNameString, showDishList, requestDishData, showDishData*/
 
-// TO read: https://jslinterrors.com/the-body-of-a-for-in-should-be-wrapped-in-an-if-statement
-
 function requestDishList(meal) {
+    "use strict";
     $.ajax({
         type: "GET",
         url: "list-dishes",
@@ -16,6 +14,7 @@ function requestDishList(meal) {
 }
 
 function showDishList(meal, data) {
+    "use strict";
     var text = '',
         itemId = '#dish-list',
         i = 0;
@@ -35,6 +34,7 @@ function showDishList(meal, data) {
 }
 
 function requestDishData(dishId) {
+    "use strict";
     $.ajax({
         type: "GET",
         url: "get-dish-data",
@@ -46,6 +46,7 @@ function requestDishData(dishId) {
 }
 
 function showDishData(dishId, data) {
+    "use strict";
     var text,
         itemId = '#dish-page',
         ingredient,
