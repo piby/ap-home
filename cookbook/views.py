@@ -16,7 +16,7 @@ password = "1point0"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '20.05.2016',
+        'version': 'v2016.08.01',
     }
     return HttpResponse(template.render(context, request))
 
@@ -224,20 +224,23 @@ def updateDishData(request):
 def getComponents(request):
     """Get data that is needed to add/update dishes. This can include
     all ingredients, all ingredient units and all categories"""
+    request_type = request.GET['type']
     all_units = []
     all_ingredients = []
     all_categories = []
-    if request.GET['units']:
+    print request_type
+    if 'units' in request_type:
         all_units = IngredientUnit.objects.values_list(
             'id', 'base_form', 'fraction_form', 'few_form', 'many_form')
-    if request.GET['ingredients']:
+    if 'ingredients' in request_type:
         all_ingredients = Ingredient.objects.values_list(
             'id', 'name', 'default_quantity', 'default_unit')
-    if request.GET['categories']:
+    if 'categories' in request_type:
         all_categories = Category.objects.values_list('id', 'name')
     data = {
-        'units': all_units,
-        'ingredients': all_ingredients,
-        'categories': all_categories
+        'units': list(all_units),
+        'ingredients': list(all_ingredients),
+        'categories': list(all_categories)
     }
+    print data
     return JsonResponse(data)

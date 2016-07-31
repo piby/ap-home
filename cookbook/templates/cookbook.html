@@ -225,12 +225,22 @@
 </div>
 
 <script>
+    var ingredientsData = new IngredientsData();
+    var unitsData = new UnitsData();
+    var categoriesData = new CategoriesData();
+    var dishPropertiesHandler = new DishProperies();
+    dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
+
     $( document ).ready(function() {
         $('.ui-icon-breakfast').on('tap', function() { requestDishList('breakfast'); });
         $('.ui-icon-soup').on('tap', function() { requestDishList('soup'); });
         $('.ui-icon-dinner').on('tap', function() { requestDishList('dinner'); });
         $('.ui-icon-desert').on('tap', function() { requestDishList('desert'); });
+
+        // get from server all dish ingreadiens, units and categories
+        requestComponents(ingredientsData, unitsData, categoriesData);
     });
+
     $( document ).on('swipeleft swiperight', "#meal-selection-page", function( event ) {
 		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
 			if ( event.type === "swiperight" ) {
@@ -238,13 +248,6 @@
 			}
         }
 	});
-
-    var ingredientsData = new IngredientsData();
-    var unitsData = new UnitsData();
-    var categoriesData = new CategoriesData();
-    var dishPropertiesHandler = new DishProperies();
-    dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
-
 </script>
 
 </body>

@@ -1,5 +1,66 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString, showDishList, requestDishData, showDishData*/
+/*global $, jQuery, alert, cleanNameString, requestComponents, setComponents, showDishList, requestDishData, showDishData*/
+
+function requestComponents(ingredientsData, unitsData, categoriesData) {
+    "use strict";
+    $.ajax({
+        type: "GET",
+        url: "get-components",
+        data: "type=[units,ingredients,categories]",
+        datatype: "json",
+        error: function (data) { alert('Error'); },
+        success: function (data) {
+            setComponents(data, ingredientsData, unitsData, categoriesData);
+        }
+    });
+}
+
+function setComponents(data, ingredientsData, unitsData, categoriesData) {
+    "use strict";
+    var units = data.units,
+        ingredients = data.ingredients,
+        categories = data.categories,
+        dataRow,
+        i;
+    for (i in units) {
+        if (units.hasOwnProperty(i)) {
+            dataRow = units[i];
+            console.log(dataRow);
+            unitsData.add(
+                dataRow.id,
+                dataRow.base_form,
+                dataRow.fraction_form,
+                dataRow.few_form,
+                dataRow.many_form,
+                ""
+            );
+        }
+    }
+    for (i in ingredients) {
+        if (ingredients.hasOwnProperty(i)) {
+            dataRow = ingredients[i];
+            console.log(dataRow);
+            ingredientsData.add(
+                dataRow.id,
+                dataRow.name,
+                dataRow.defaultQuantity,
+                dataRow.defaultUnit,
+                ""
+            );
+        }
+    }
+    for (i in categories) {
+        if (categories.hasOwnProperty(i)) {
+            dataRow = categories[i];
+            console.log(dataRow);
+            categoriesData.add(
+                dataRow.id,
+                dataRow.name,
+                ""
+            );
+        }
+    }
+}
 
 function requestDishList(meal) {
     "use strict";
