@@ -18,11 +18,12 @@ function UnitsData() {
         return this.data.length;
     };
 
-    this.index = function (unit) {
-        var i;
+    this.index = function (unitIdOrName) {
+        var i,
+            column = ((typeof unitIdOrName) === "number") ? 0 : 1;
         // find index of specidief unit
         for (i in this.data) {
-            if (this.data.hasOwnProperty(i) && (this.data[i][1] === unit)) {
+            if (this.data.hasOwnProperty(i) && (this.data[i][column] === unitIdOrName)) {
                 return i;
             }
         }
@@ -37,8 +38,8 @@ function UnitsData() {
         }
     };
 
-    this.updateId = function (unit, id) {
-        var index = this.index(unit);
+    this.updateId = function (unitName, id) {
+        var index = this.index(unitName);
         if (index === undefined) {
             return;
         }
@@ -72,15 +73,15 @@ function UnitsData() {
         return [];
     };
 
-    this.decline = function (unit, quantity) {
-        var index = this.index(unit),
-            forms;
+    this.decline = function (unitIndex, quantity) {
+        var forms;
         // return unit if index was not found
-        if (index === undefined) {
-            return unit;
+        if ((unitIndex === undefined) || (unitIndex >= this.count())) {
+            return undefined;
         }
-        forms = this.data[index];
+        forms = this.data[unitIndex];
         // determine correct unit form depending on quantity
+        console.log(parseInt(1.5, 10) + ' ' + isFloat(quantity) + ' ' + forms[2]);
         if (isFloat(quantity)) {
             return forms[2];
         } else if ((quantity > 4) && (quantity < 22)) {
@@ -90,7 +91,7 @@ function UnitsData() {
         } else if (quantity !== 1) {
             return forms[4];
         }
-        return unit;
+        return undefined;
     };
 
     this.getBaseForm = function (form) {

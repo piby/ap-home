@@ -52,7 +52,6 @@ function IngredientProperties() {
         var self = this;
         self.ingredientsData = ingredientsData;
         self.unitsData = unitsData;
-        self.synchronizeIngredientList();
         $('#show-add-ingredient-popup').on('tap', function (event) { self.showAddIngredientPopup(); });
         $('#show-add-ingredient-unit-popup').on('tap', function (event) { self.showAddUnitPopup(); });
         $('#add-new-unit').on('tap', function (event) { self.addNewUnitDefinition(); });
@@ -66,19 +65,24 @@ function IngredientProperties() {
             itemsInHtml = ingredientsList.children().length,
             itemsInScript = this.ingredientsData.count(),
             ingredientsText = '',
-            eventIndex,
+            selectorString = '#all-ingredients-list a',
             i = 0;
         // if there is same number of items in html as in javascript array then there is nothing to do
         if (itemsInHtml === itemsInScript) {
             return;
         }
         for (i = itemsInHtml; i < itemsInScript; i += 1) {
-            ingredientsText += '<a href="#" ' + classText + '>' + this.ingredientsData.getName(i) + "</a>";
+            ingredientsText += '<a href="#" ' + classText + '>' + this.ingredientsData.getName(i) + "</a>\n";
         }
         ingredientsList.append(ingredientsText);
-        eventIndex = itemsInHtml - 1;
-        eventIndex = (eventIndex < 0) ? 0 : eventIndex;
-        $('#all-ingredients-list a:gt(' + eventIndex + ')').on('tap', function (event) { self.addIngredient($(this).html()); });
+        if (itemsInHtml > 0) {
+            selectorString += (':gt(' + (itemsInHtml - 1) + ')');
+        }
+        $(selectorString).on('tap', function (event) { self.addIngredient($(this).html()); });
+    };
+
+    this.clearIngredientList = function () {
+        $('#all-ingredients-list').empty();
     };
 
     /// Add ingredient to the recipe.
@@ -95,7 +99,8 @@ function IngredientProperties() {
             if (this.ingredientsData.getName(i) === name) {
                 ingredient = this.ingredientsData.get(i);
                 quantity = ingredient.defaulQuantity;
-                unit = this.unitsData.decline(ingredient.defaulUnit, quantity);
+                unit = this.unitsData.index(ingredient.defaulUnit);
+                unit = this.unitsData.decline(unit, quantity);
                 break;
             }
         }
@@ -616,7 +621,6 @@ function CategoryProperties() {
 	this.initialize = function (categoriesData) {
         var self = this;
 		this.categoriesData = categoriesData;
-		this.synchronizeCategoriesList();
         $('#add-new-category').on('tap', function (event) { self.showAddCategoryPopup(); });
         $('#add-category').on('tap', function (event) { self.addNewCategoryDefinition(); });
 	};
@@ -645,6 +649,10 @@ function CategoryProperties() {
             selectorString += (':gt(' + (itemsInHtml - 1) + ')');
         }
         $(selectorString).on('tap', function (event) { self.addCategory($(this).text()); });
+    };
+
+    this.clearCategoriesList = function () {
+        $('#all-categories-list').empty();
     };
 
     /// Add keyword to the keyword list.
@@ -750,6 +758,13 @@ function DishProperies() {
         this.categoryProperties.initialize(categoriesData);
 		$('#dish-defined').on('tap', function (event) { self.applyDishProperties(); });
 		$('#dish-definition-canceled').on('tap', function (event) { self.goToHomeScreen(); });
+    };
+
+    this.synchronizeComponents = function () {
+        this.ingredientProperties.clearIngredientList();
+        this.ingredientProperties.synchronizeIngredientList();
+        this.categoryProperties.clearCategoriesList();
+        this.categoryProperties.synchronizeCategoriesList();
     };
 
     this.applyDishProperties = function () {

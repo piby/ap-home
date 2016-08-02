@@ -25,13 +25,12 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
     for (i in units) {
         if (units.hasOwnProperty(i)) {
             dataRow = units[i];
-            console.log(dataRow);
             unitsData.add(
-                dataRow.id,
-                dataRow.base_form,
-                dataRow.fraction_form,
-                dataRow.few_form,
-                dataRow.many_form,
+                dataRow[0],
+                dataRow[1],
+                dataRow[2],
+                dataRow[3],
+                dataRow[4],
                 ""
             );
         }
@@ -39,12 +38,11 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
     for (i in ingredients) {
         if (ingredients.hasOwnProperty(i)) {
             dataRow = ingredients[i];
-            console.log(dataRow);
             ingredientsData.add(
-                dataRow.id,
-                dataRow.name,
-                dataRow.defaultQuantity,
-                dataRow.defaultUnit,
+                dataRow[0],
+                dataRow[1],
+                dataRow[2],
+                dataRow[3],
                 ""
             );
         }
@@ -52,10 +50,9 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
     for (i in categories) {
         if (categories.hasOwnProperty(i)) {
             dataRow = categories[i];
-            console.log(dataRow);
             categoriesData.add(
-                dataRow.id,
-                dataRow.name,
+                dataRow[0],
+                dataRow[1],
                 ""
             );
         }

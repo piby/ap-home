@@ -22,7 +22,7 @@
 
 <div data-role="page" id="meal-selection-page">
   <div data-role="panel" id="main-panel" data-display="reveal" data-position="left" data-theme="a">
-    <a href="#dish-properties-page" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
+    <a href="#" id="add-dish" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
   </div>
   <div data-role="header">
     <h1>CookBook {{ version }}</h1>
@@ -236,6 +236,11 @@
         $('.ui-icon-soup').on('tap', function() { requestDishList('soup'); });
         $('.ui-icon-dinner').on('tap', function() { requestDishList('dinner'); });
         $('.ui-icon-desert').on('tap', function() { requestDishList('desert'); });
+
+        $('#add-dish').on('tap', function() {
+            dishPropertiesHandler.synchronizeComponents();
+            $.mobile.changePage($('#dish-properties-page'));
+        });
 
         // get from server all dish ingreadiens, units and categories
         requestComponents(ingredientsData, unitsData, categoriesData);

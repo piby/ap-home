@@ -242,5 +242,4 @@ def getComponents(request):
         'ingredients': list(all_ingredients),
         'categories': list(all_categories)
     }
-    print data
     return JsonResponse(data)
