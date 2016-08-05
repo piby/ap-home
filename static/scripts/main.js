@@ -26,12 +26,12 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
         if (units.hasOwnProperty(i)) {
             dataRow = units[i];
             unitsData.add(
-                dataRow[0],
-                dataRow[1],
-                dataRow[2],
-                dataRow[3],
-                dataRow[4],
-                ""
+                dataRow[0], // id
+                dataRow[1], // one
+                dataRow[2], // half
+                dataRow[3], // three
+                dataRow[4], // twentyfive
+                ""          // flag
             );
         }
     }
@@ -39,11 +39,11 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
         if (ingredients.hasOwnProperty(i)) {
             dataRow = ingredients[i];
             ingredientsData.add(
-                dataRow[0],
-                dataRow[1],
-                dataRow[2],
-                dataRow[3],
-                ""
+                dataRow[0], // id
+                dataRow[1], // name
+                dataRow[2], // defaultQuantity
+                dataRow[3], // defaultUnit
+                ""          // flag
             );
         }
     }
@@ -51,9 +51,9 @@ function setComponents(data, ingredientsData, unitsData, categoriesData) {
         if (categories.hasOwnProperty(i)) {
             dataRow = categories[i];
             categoriesData.add(
-                dataRow[0],
-                dataRow[1],
-                ""
+                dataRow[0], // id
+                dataRow[1], // name
+                ""          // flag
             );
         }
     }

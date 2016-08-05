@@ -21,12 +21,11 @@ class Dish(models.Model):
     name = models.CharField(max_length=150)
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
     recipe = models.CharField(max_length=4000)
-    done_count = models.IntegerField(default=0)
     last_done_date = models.DateField()
 
 class DishPhoto(models.Model):
     dish = models.ForeignKey(Dish)
-    photo = models.CharField(max_length=200)
+    file_name = models.CharField(max_length=200)
     sequential_number = models.CharField(max_length=1)
 
 class DishIngredient(models.Model):
@@ -43,6 +42,13 @@ class DishCategory(models.Model):
     dish = models.ForeignKey(Dish)
     category = models.ForeignKey(Category)
     sequential_number = models.CharField(max_length=1)
+
+# nabial/tluszcze, slodycze, warzywa, owoce, przetwory mleczne,
+# produkty miesne, ryby, napoje, pieczywo, konserwy, makaron/ryz/kasza,
+# przyprawy, sosy, mrozonki, dania gotowe, inne
+class IngredientCategory(models.Model):
+    name = models.CharField(max_length=50)
+    ingredient = models.ForeignKey(Ingredient)
 
 class MealPlan:
     date = models.DateField()

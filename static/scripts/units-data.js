@@ -73,15 +73,14 @@ function UnitsData() {
         return [];
     };
 
-    this.decline = function (unitIndex, quantity) {
+    this.decline = function (index, quantity) {
         var forms;
         // return unit if index was not found
-        if ((unitIndex === undefined) || (unitIndex >= this.count())) {
+        if ((index === undefined) || (index >= this.count())) {
             return undefined;
         }
-        forms = this.data[unitIndex];
+        forms = this.data[index];
         // determine correct unit form depending on quantity
-        console.log(parseInt(1.5, 10) + ' ' + isFloat(quantity) + ' ' + forms[2]);
         if (isFloat(quantity)) {
             return forms[2];
         } else if ((quantity > 4) && (quantity < 22)) {
@@ -91,7 +90,7 @@ function UnitsData() {
         } else if (quantity !== 1) {
             return forms[4];
         }
-        return undefined;
+        return forms[1];
     };
 
     this.getBaseForm = function (form) {

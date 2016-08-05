@@ -29,7 +29,8 @@ function IngredientsData() {
     };
 
     this.add = function (id, name, defaultQuantity, defaultUnit, flag) {
-        var i;
+        var i,
+            floorQuantity = Math.floor(defaultQuantity);
         // make sure that we do not have ingredient with specified name
         for (i in this.data) {
             if (this.data.hasOwnProperty(i)) {
@@ -38,6 +39,9 @@ function IngredientsData() {
                 }
             }
         }
+        // if quantity is integer store it as an integer, not float
+        // this is needed for the declination algorithm
+        defaultQuantity = (defaultQuantity % 1 === 0) ? floorQuantity : defaultQuantity;
         this.data.push([id, name, defaultQuantity, defaultUnit, flag]);
     };
 

@@ -244,6 +244,7 @@ function IngredientProperties() {
     this.applyUnitAndQuantity = function (index, unit, quantity) {
         var itemChildren = $('#ingredinets-table tr:nth-child(' + index + ') td');
         itemChildren.eq(1).text(quantity);
+        unit = this.unitsData.index(unit);
         itemChildren.eq(2).text(this.unitsData.decline(unit, quantity));
         $('#edit-ingredient-popup').popup('close');
     };

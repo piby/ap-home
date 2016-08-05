@@ -105,7 +105,6 @@ def addDishData(request):
         name=general_data['name'],
         type=general_data['type'],
         recipe=str(recipe_data),
-        done_count=0,
         last_done_date=date(2000, 1, 1))
     dish.save()
     # process new units
@@ -228,7 +227,6 @@ def getComponents(request):
     all_units = []
     all_ingredients = []
     all_categories = []
-    print request_type
     if 'units' in request_type:
         all_units = IngredientUnit.objects.values_list(
             'id', 'base_form', 'fraction_form', 'few_form', 'many_form')
