@@ -67,11 +67,11 @@ function requestDishList(meal) {
         data: "meal=" + meal,
         datatype: "json",
         error: function (data) { alert('Error'); },
-        success: function (data) { showDishList(meal, data); }
+        success: function (data) { showDishList(data); }
     });
 }
 
-function showDishList(meal, data) {
+function showDishList(data) {
     "use strict";
     var text = '',
         itemId = '#dish-list',

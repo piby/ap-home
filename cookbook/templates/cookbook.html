@@ -232,10 +232,10 @@
     dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
 
     $( document ).ready(function() {
-        $('.ui-icon-breakfast').on('tap', function() { requestDishList('breakfast'); });
-        $('.ui-icon-soup').on('tap', function() { requestDishList('soup'); });
-        $('.ui-icon-dinner').on('tap', function() { requestDishList('dinner'); });
-        $('.ui-icon-desert').on('tap', function() { requestDishList('desert'); });
+        $('.ui-icon-breakfast').on('tap', function() { requestDishList(1); });
+        $('.ui-icon-soup').on('tap', function() { requestDishList(2); });
+        $('.ui-icon-dinner').on('tap', function() { requestDishList(3); });
+        $('.ui-icon-desert').on('tap', function() { requestDishList(4); });
 
         $('#add-dish').on('tap', function() {
             dishPropertiesHandler.synchronizeComponents();

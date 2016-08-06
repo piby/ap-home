@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from cookbook.models import IngredientUnit
 from cookbook.models import Ingredient
 from cookbook.models import DishIngredient
-from cookbook.models import Category
+from cookbook.models import DishPhoto
+from cookbook.models import DishCategory
 from cookbook.models import Dish
 from datetime import date
 import json
@@ -21,65 +22,41 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 def getDishList(request):
-	meal = request.GET['meal']
-	# todo query database
-	data = [
-		{
-			'id': 1,
-			'name': 'Omlet z papryka',
-			'count': 10,
-			'last_done_date': 'tydzien temu'
-		},
-		{
-			'id': 2,
-			'name': 'Kanapki',
-			'count': 100,
-			'last_done_date': 'miesiac temu'
-		}
-	]
-	return JsonResponse(data, safe=False)
+    meal_type = request.GET['meal']
+    dishes = Dish.objects\
+        .filter(type=meal_type)\
+        .values('id', 'name', 'last_done_date')\
+        .order_by('name')
+    return JsonResponse(list(dishes), safe=False)
 
 def getDishData(request):
-	id = request.GET['id']
-	# todo query database
-	data = {
-		'name':'Omlet',
-		'meal':'breakfast',
-		'photo': 'http://www.mojegotowanie.pl/var/self/storage/images/media/images/przepisy/miesa/omlet_z_cukinia_i_szynka/3758778-1-pol-PL/omlet_z_cukinia_i_szynka_popup_watermark.jpg',
-		'ingredients': [
-		    {
-		        'name': 'jajka',
-		        'quantity': 4,
-		        'unit': 'sztuki'
-		    },
-		    {
-		        'name': 'papryka',
-		        'quantity': 0.5,
-		        'unit': 'sztuki'
-		    },
-		    {
-		        'name': 'oliwki',
-		        'quantity': 15,
-		        'unit': 'sztuk'
-		    }
-		],
-		'optional_ingredients': [
-		],
-		'reciepe': [
-			'Posiekac dodatki',
-			'Roztrzepac jajka',
-			'Wylac jajka na rozgrzana patelnie',
-			'Po chwili dosypac dodatki',
-			'Smarzyc na malym ogniu pod przykryciem',
-			'Po 10 minutach obrocic omlet na druga strone'
-		],
-		'keywords': [
-			'jajka',
-			'papryka',
-			'smazone'
-		]
-	}
-	return JsonResponse(data)
+    requested_id = request.GET['id']
+    try:
+        dish = Dish.objects.get(pk=requested_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'result': 'specified dish is not in data base'})
+    photos = DishPhoto.objects\
+        .filter(dish=dish)\
+        .values('file_name', 'sequential_number')\
+        .order_by('sequential_number')
+    ingredients = DishIngredient.objects\
+        .filter(dish=dish)\
+        .values()\
+        .order_by('sequential_number')
+    categories = DishCategory.objects\
+        .filter(dish=dish)\
+        .values()\
+        .order_by('sequential_number')
+    data = {
+        'name': dish.name,
+        'meal': dish.type,
+        'photos': [p.filename for p in photos],
+        'ingredients': list(ingredients),
+        'reciepe': dish.recipe,
+        'categories': [c.category for c in categories]
+    }
+    print data
+    return JsonResponse(data)
 
 @csrf_protect
 def addDishData(request):
