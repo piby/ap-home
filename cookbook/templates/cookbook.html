@@ -49,16 +49,24 @@
 
     <div data-role="popup" id="add-ingredient-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
-        <h3>Nowy skladnik</h3>
+        <h3>Nowy składnik</h3>
         <input id="add-ingredient-name" value="" placeholder="Nazwa" data-theme="a" type="text">
         <input id="add-ingredient-quantity" value="" placeholder="1" data-theme="a" type="text">
 		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="add-ingredient-unit" placeholder="Wybierz jednostke" value="">
+		  <input data-type="search" data-enhanced="true" data-inset="false" id="select-ingredient-unit" placeholder="Wybierz jednostke" value="">
 		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#add-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
+		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#select-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
 		  <div id="add-ingredient-all-units-list" class="ui-controlgroup-controls">
 		  </div>
         </div>
+		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
+		  <input data-type="search" data-enhanced="true" data-inset="false" id="select-ingredient-type" placeholder="Wybierz typ" value="">
+		</div>
+		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#select-ingredient-type" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
+		  <div id="add-ingredient-all-units-list" class="ui-controlgroup-controls">
+		  </div>
+        </div>
+        <a href="#" id="add-ingredient-unit" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
     <div data-role="popup" id="add-ingredient-unit-popup" data-theme="a" class="ui-corner-all">

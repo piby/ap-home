@@ -54,7 +54,7 @@ function IngredientProperties() {
         self.unitsData = unitsData;
         $('#show-add-ingredient-popup').on('tap', function (event) { self.showAddIngredientPopup(); });
         $('#show-add-ingredient-unit-popup').on('tap', function (event) { self.showAddUnitPopup(); });
-        $('#add-new-unit').on('tap', function (event) { self.addNewUnitDefinition(); });
+        $('#select-ingredient-unit').on('tap', function (event) { self.addNewUnitDefinition(); });
     };
 
     /// Method called when list of available ingredients should be updated.

@@ -20,3 +20,7 @@
 .ui-icon-desert {
     background-image: url(images/desert.png);
 }
+
+#dish-recipe h4 {
+    margin-left: 10px;
+}

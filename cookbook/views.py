@@ -54,7 +54,8 @@ def getDishData(request):
         'photos': [p.filename for p in photos],
         'ingredients': list(ingredients),
         'reciepe': json.loads(dish.recipe),
-        'categories': [c.category for c in categories]
+        'categories': [c.category for c in categories],
+        'result': 'ok'
     }
     return JsonResponse(data)
 
@@ -216,6 +217,7 @@ def getComponents(request):
     if 'categories' in request_type:
         all_categories = Category.objects.values_list('id', 'name')
     data = {
+        'result': 'ok',
         'units': list(all_units),
         'ingredients': list(all_ingredients),
         'categories': list(all_categories)

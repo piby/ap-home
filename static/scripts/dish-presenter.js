@@ -15,10 +15,10 @@ function DishPresenter() {
         this.unitsData  = unitsData;
         this.categoriesData  = categoriesData;
         
-        $('.ui-icon-breakfast').on('tap', function () { self.requestDishList(1); });
-        $('.ui-icon-soup').on('tap', function () { self.requestDishList(2); });
-        $('.ui-icon-dinner').on('tap', function () { self.requestDishList(3); });
-        $('.ui-icon-desert').on('tap', function () { self.requestDishList(4); });
+        $('.ui-icon-breakfast').on('tap', function () { self.requestDishList(0); });
+        $('.ui-icon-soup').on('tap', function () { self.requestDishList(1); });
+        $('.ui-icon-dinner').on('tap', function () { self.requestDishList(2); });
+        $('.ui-icon-desert').on('tap', function () { self.requestDishList(3); });
     };
 
     this.requestDishList = function (meal) {
@@ -67,6 +67,7 @@ function DishPresenter() {
 
     this.showDishData = function (dishId, data) {
         var text,
+            sectionCount,
             section,
             points,
             itemId = '#dish-page',
@@ -80,10 +81,10 @@ function DishPresenter() {
         // set dish name
         $(itemId + ' div h1').html(data.name);
         // set dish photo
-        if (data.photo) {
-            $('#dish-photo').attr('src', data.photo);
+        if (data.photos.length) {
+            $('#dish-photo').attr('src', data.photos[0]);
         } else {
-            $('#dish-photo').attr('src', 'img/noimage.jpg');
+            $('#dish-photo').attr('src', '/static/images/noimage.jpg');
         }
         // set dish ingredients
         text = '';
@@ -101,12 +102,16 @@ function DishPresenter() {
         $('#dish-ingredients').html(text);
         // set dish recipe
         text = '';
+        sectionCount = data.reciepe.length;
         for (i in data.reciepe) {
             if (data.reciepe.hasOwnProperty(i)) {
                 section = data.reciepe[i];
                 points = section.points;
-                text += '<h4>' + section.name + '</h4>' +
-                        '<ol>';
+                // display section name only when there is more then one section
+                if (sectionCount > 1) {
+                    text += '<h4>' + section.name + '</h4>';
+                }
+                text += '<ol>';
                 for (j in points) {
                     if (points.hasOwnProperty(j)) {
                         text += '<li>' + points[j] + '</li>\n';
