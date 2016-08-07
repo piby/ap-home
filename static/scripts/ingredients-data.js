@@ -1,4 +1,5 @@
-
+/*jslint browser: true*/
+/*global cleanQuantity*/
 
 function IngredientsData() {
     "use strict";
@@ -18,10 +19,12 @@ function IngredientsData() {
         return this.data.length;
     };
 
-    this.index = function (name) {
-        var i;
+    this.index = function (ingredientIdOrName) {
+        var i,
+            column = ((typeof ingredientIdOrName) === "number") ? 0 : 1;
+        // find index of specidief unit
         for (i in this.data) {
-            if (this.data.hasOwnProperty(i) && (this.data[i][1] === name)) {
+            if (this.data.hasOwnProperty(i) && (this.data[i][column] === ingredientIdOrName)) {
                 return i;
             }
         }
@@ -29,8 +32,7 @@ function IngredientsData() {
     };
 
     this.add = function (id, name, defaultQuantity, defaultUnit, flag) {
-        var i,
-            floorQuantity = Math.floor(defaultQuantity);
+        var i;
         // make sure that we do not have ingredient with specified name
         for (i in this.data) {
             if (this.data.hasOwnProperty(i)) {
@@ -39,9 +41,7 @@ function IngredientsData() {
                 }
             }
         }
-        // if quantity is integer store it as an integer, not float
-        // this is needed for the declination algorithm
-        defaultQuantity = (defaultQuantity % 1 === 0) ? floorQuantity : defaultQuantity;
+        defaultQuantity = cleanQuantity(defaultQuantity);
         this.data.push([id, name, defaultQuantity, defaultUnit, flag]);
     };
 

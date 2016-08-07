@@ -179,7 +179,7 @@ function IngredientProperties() {
             classText = 'class="ui-btn ui-corner-all ui-shadow ui-screen-hidden"',
             i = 0;
         for (i = 0; i < this.unitsData.count(); i += 1) {
-            allUnitsText += '<a href="#" ' + classText + '>' + this.unitsData.name(i) + "</a>";
+            allUnitsText += '<a href="#" ' + classText + '>' + this.unitsData.getName(i) + "</a>";
         }
         $(listTagId).html(allUnitsText);
         // define function that is called when unit is selected

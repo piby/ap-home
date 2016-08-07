@@ -38,6 +38,11 @@ function cleanNameString(string) {
     return string;
 }
 
+function cleanQuantity(value) {
+    var floorValue = Math.floor(value);
+    return (value % 1 === 0) ? floorValue : value;
+}
+
 function getCookie(name) {
     "use strict";
     var cookieValue = null,

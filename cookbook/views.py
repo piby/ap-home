@@ -9,6 +9,7 @@ from cookbook.models import DishIngredient
 from cookbook.models import DishPhoto
 from cookbook.models import DishCategory
 from cookbook.models import Dish
+from cookbook.models import Category
 from datetime import date
 import json
 
@@ -52,10 +53,9 @@ def getDishData(request):
         'meal': dish.type,
         'photos': [p.filename for p in photos],
         'ingredients': list(ingredients),
-        'reciepe': dish.recipe,
+        'reciepe': json.loads(dish.recipe),
         'categories': [c.category for c in categories]
     }
-    print data
     return JsonResponse(data)
 
 @csrf_protect
@@ -64,7 +64,7 @@ def addDishData(request):
     new_ingredients = []
     new_categories = []
     data = json.loads(request.body.decode("utf-8"))
-    print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
+    # print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
     general_data = data['general']
     ingredients_data = data['ingredients']
     recipe_data = data['recipe']
@@ -81,7 +81,7 @@ def addDishData(request):
     dish = Dish(
         name=general_data['name'],
         type=general_data['type'],
-        recipe=str(recipe_data),
+        recipe=json.dumps(recipe_data),
         last_done_date=date(2000, 1, 1))
     dish.save()
     # process new units
@@ -191,6 +191,9 @@ def addDishData(request):
             'new_units': new_units,
             'new_ingredients': new_ingredients,
             'new_categories': new_categories})
+
+def removeDish(request):
+    return JsonResponse({'result': 'ok'})
 
 def updateDishData(request):
     data = request.GET['data']

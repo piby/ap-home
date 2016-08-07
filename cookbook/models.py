@@ -6,8 +6,16 @@ class IngredientUnit(models.Model):
     few_form = models.CharField(max_length=50)
     many_form = models.CharField(max_length=50)
 
+# nabial/tluszcze, slodycze, warzywa, owoce, przetwory mleczne,
+# produkty miesne, ryby, napoje, pieczywo, konserwy, makaron/ryz/kasza,
+# produkty sypkie, sosy, mrozonki, dania gotowe, inne
+# https://www.tesco.pl/marki-i-uslugi/produkty-tesco/artykuly-spozywcze
+class IngredientType(models.Model):
+    name = models.CharField(max_length=50)
+
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
+    category_type = models.ForeignKey(IngredientType)
     default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
     default_unit = models.ForeignKey(IngredientUnit)
 
@@ -43,13 +51,7 @@ class DishCategory(models.Model):
     category = models.ForeignKey(Category)
     sequential_number = models.CharField(max_length=1)
 
-# nabial/tluszcze, slodycze, warzywa, owoce, przetwory mleczne,
-# produkty miesne, ryby, napoje, pieczywo, konserwy, makaron/ryz/kasza,
-# przyprawy, sosy, mrozonki, dania gotowe, inne
-class IngredientCategory(models.Model):
-    name = models.CharField(max_length=50)
-    ingredient = models.ForeignKey(Ingredient)
-
 class MealPlan:
     date = models.DateField()
     dish = models.ForeignKey(Dish)
+    sequential_number = models.CharField(max_length=1)

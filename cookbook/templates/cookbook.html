@@ -16,7 +16,7 @@
   <script language="javascript" src="{% static "scripts/categories-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/ingredients-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-properties.js" %}"></script>
-
+  <script language="javascript" src="{% static "scripts/dish-presenter.js" %}"></script>
 </head>
 <body>
 
@@ -206,16 +206,19 @@
 </div>
 
 <div data-role="page" id="dish-page">
+  <div data-role="panel" id="dish-panel" data-display="reveal" data-position="left" data-theme="a">
+    <a href="#" id="remove-dish" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
+  </div>
   <div data-role="header">
     <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
     <h1>Dish name</h1>
   </div>
   <div data-role="main" class="ui-content">
     <img id="dish-photo" src="" alt="">
-      <h3>Skladniki</h3>
+      <h3>Składniki</h3>
       <ul id="dish-ingredients"></ul>
       <h3>Przepis</h3>
-      <ol id="dish-recipe"></ol>
+      <div id="dish-recipe"></div>
       <h3>Kategorie</h3>
       <p id="dish-categories"></p>
   </div>
@@ -228,15 +231,12 @@
     var ingredientsData = new IngredientsData();
     var unitsData = new UnitsData();
     var categoriesData = new CategoriesData();
+    var dishPresenter = new DishPresenter();
+    dishPresenter.initialize(ingredientsData, unitsData, categoriesData);
     var dishPropertiesHandler = new DishProperies();
     dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
 
     $( document ).ready(function() {
-        $('.ui-icon-breakfast').on('tap', function() { requestDishList(1); });
-        $('.ui-icon-soup').on('tap', function() { requestDishList(2); });
-        $('.ui-icon-dinner').on('tap', function() { requestDishList(3); });
-        $('.ui-icon-desert').on('tap', function() { requestDishList(4); });
-
         $('#add-dish').on('tap', function() {
             dishPropertiesHandler.synchronizeComponents();
             $.mobile.changePage($('#dish-properties-page'));
@@ -250,6 +250,13 @@
 		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
 			if ( event.type === "swiperight" ) {
 				$( "#main-panel" ).panel( "open" );
+			}
+        }
+	});
+    $( document ).on('swipeleft swiperight', "#dish-page", function( event ) {
+		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
+			if ( event.type === "swiperight" ) {
+				$( "#dish-panel" ).panel( "open" );
 			}
         }
 	});

@@ -47,7 +47,7 @@ function UnitsData() {
         this.data[index][5] = '';
     };
 
-    this.name = function (index) {
+    this.getName = function (index) {
         if (index < this.count()) {
             return this.data[index][1];
         }
