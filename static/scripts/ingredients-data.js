@@ -83,7 +83,7 @@ function IngredientsData() {
             id: 0,
             name: "undefined",
             defaulQuantity: 1,
-            defaulUnit: "sztuka",
+            defaulUnit: 1,
             serverUpdateRequired: false
         };
     };

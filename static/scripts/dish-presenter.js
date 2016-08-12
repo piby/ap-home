@@ -9,11 +9,11 @@ function DishPresenter() {
     this.unitsData  = undefined;
     this.categoriesData  = undefined;
 
-    this.initialize = function (ingredientsData, unitsData, categoriesData) {
+    this.initialize = function (globals) {
         var self = this;
-        this.ingredientsData  = ingredientsData;
-        this.unitsData  = unitsData;
-        this.categoriesData  = categoriesData;
+        this.ingredientsData  = globals.ingredientsData;
+        this.unitsData  = globals.unitsData;
+        this.categoriesData  = globals.categoriesData;
         
         $('.ui-icon-breakfast').on('tap', function () { self.requestDishList(0); });
         $('.ui-icon-soup').on('tap', function () { self.requestDishList(1); });

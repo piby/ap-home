@@ -15,6 +15,8 @@
   <script language="javascript" src="{% static "scripts/units-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/categories-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/ingredients-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/ingredient-types-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/globals.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-properties.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-presenter.js" %}"></script>
 </head>
@@ -34,7 +36,7 @@
     <a href="#" class="ui-btn ui-meal-button ui-icon-desert"></a>
   </div>
   <div data-role="footer">
-    <h1>Select meal</h1>
+    <h1>by pbyszewski</h1>
   </div>
 </div> 
 
@@ -51,46 +53,23 @@
       <form style="padding:10px 20px;">
         <h3>Nowy składnik</h3>
         <input id="add-ingredient-name" value="" placeholder="Nazwa" data-theme="a" type="text">
-        <input id="add-ingredient-quantity" value="" placeholder="1" data-theme="a" type="text">
-		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="select-ingredient-unit" placeholder="Wybierz jednostke" value="">
-		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#select-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-		  <div id="add-ingredient-all-units-list" class="ui-controlgroup-controls">
-		  </div>
+        <select id="add-ingredient-type" data-native-menu="false">
+        </select>
+        <div class="ui-field-contain">
+          <input id="add-ingredient-quantity" value="" placeholder="1" data-theme="a" type="text">
+          <select id="add-ingredient-unit" data-native-menu="false">
+          </select>
         </div>
-		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="select-ingredient-type" placeholder="Wybierz typ" value="">
-		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#select-ingredient-type" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-		  <div id="add-ingredient-all-units-list" class="ui-controlgroup-controls">
-		  </div>
-        </div>
-        <a href="#" id="add-ingredient-unit" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
-      </form>
-    </div>
-    <div data-role="popup" id="add-ingredient-unit-popup" data-theme="a" class="ui-corner-all">
-      <form style="padding:10px 20px;">
-        <h3>Formy nowej jednostki</h3>
-        <input value="" placeholder="jeden/jedna/jedno" data-theme="a" type="text">
-        <input value="" placeholder="pol" data-theme="a" type="text">
-        <input value="" placeholder="trzy" data-theme="a" type="text">
-        <input value="" placeholder="dwadziescia piec" data-theme="a" type="text">
-        <a href="#" id="add-new-unit" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+        <a href="#" id="add-new-ingredient" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
     <div data-role="popup" id="edit-ingredient-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
         <h3>Edycja skladnika</h3>
         <input id="edit-ingredient-quantity" value="" placeholder="Ilosc" data-theme="a" type="text">
-		<!-- unit finder -->
-		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="edit-ingredient-unit" placeholder="Wybierz jednostke" value="">
-		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#edit-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-		  <div id="edit-ingredient-all-units-list" class="ui-controlgroup-controls">
-		  </div>
-        </div>
+        <select id="edit-ingredient-unit" data-native-menu="false">
+        </select>
+        <a href="#" id="edit-ingredient" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
     <div data-role="popup" id="edit-recipe-section-name-popup" data-theme="a" class="ui-corner-all">
@@ -135,7 +114,7 @@
             <input id="dish-type-desert" name="dish-type" value="3" type="radio">
             <label for="dish-type-desert">Deser</label>
           </fieldset>
-      	  <button type="button" data-icon="gear" data-iconpos="left" data-mini="true" data-inline="true" id="add-image">Ustaw zdjecie</button>
+          <input data-clear-btn="true" name="dish-image-path" id="dish-image-path" value="" type="file">
       	</div>
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
@@ -150,8 +129,7 @@
             <div id="all-ingredients-list" class="ui-controlgroup-controls">
             </div>
           </div>
-          <a href="#" id="show-add-ingredient-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-corner-all ui-btn-inline">Dodaj nowy skladnik</a>
-          <a href="#" id="show-add-ingredient-unit-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-corner-all ui-btn-inline">Dodaj nowa jednostke</a>
+          <a href="#" id="show-add-ingredient-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-mini ui-corner-all ui-btn-inline">Dodaj nowy skladnik</a>
 	    </div>
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
@@ -176,13 +154,13 @@
             <div id="all-categories-list" class="ui-controlgroup-controls">
             </div>
           </div>
-          <button type="button" data-icon="plus" data-iconpos="left" data-mini="true" data-inline="true" id="add-new-category">Dodaj nowa kategorie</button>
+          <button type="button" id="add-new-category" class="ui-btn ui-btn-icon-left ui-icon-plus ui-mini ui-corner-all ui-btn-inline">Dodaj nowa kategorie</button>
         </div>
       </div>
 
 	  <!-- add new category, that was not used before -->
       </br>
-      <input id="secret-password" placeholder="Haslo" value="" type="text">
+      <input id="new-dish-password" placeholder="Haslo" value="" type="password">
 	  <fieldset class="ui-grid-a">
         <div class="ui-block-a">
           <a href="#" id="dish-defined" class="ui-btn ui-corner-all">Gotowe</a>
@@ -227,7 +205,9 @@
       <ul id="dish-ingredients"></ul>
       <h3>Przepis</h3>
       <div id="dish-recipe"></div>
+      <!--
       <h3>Kategorie</h3>
+      -->
       <p id="dish-categories"></p>
   </div>
   <div data-role="footer">
@@ -236,13 +216,12 @@
 </div>
 
 <script>
-    var ingredientsData = new IngredientsData();
-    var unitsData = new UnitsData();
-    var categoriesData = new CategoriesData();
+    var globals = new Globals();
     var dishPresenter = new DishPresenter();
-    dishPresenter.initialize(ingredientsData, unitsData, categoriesData);
     var dishPropertiesHandler = new DishProperies();
-    dishPropertiesHandler.initialize(ingredientsData, unitsData, categoriesData);
+
+    dishPresenter.initialize(globals);
+    dishPropertiesHandler.initialize(globals);
 
     $( document ).ready(function() {
         $('#add-dish').on('tap', function() {
@@ -251,7 +230,7 @@
         });
 
         // get from server all dish ingreadiens, units and categories
-        requestComponents(ingredientsData, unitsData, categoriesData);
+        globals.requestComponents();
     });
 
     $( document ).on('swipeleft swiperight', "#meal-selection-page", function( event ) {

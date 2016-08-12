@@ -4,6 +4,7 @@ from django.template import RequestContext, loader
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ObjectDoesNotExist
 from cookbook.models import IngredientUnit
+from cookbook.models import IngredientType
 from cookbook.models import Ingredient
 from cookbook.models import DishIngredient
 from cookbook.models import DishPhoto
@@ -61,9 +62,6 @@ def getDishData(request):
 
 @csrf_protect
 def addDishData(request):
-    new_units = []
-    new_ingredients = []
-    new_categories = []
     data = json.loads(request.body.decode("utf-8"))
     # print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
     general_data = data['general']
@@ -85,27 +83,6 @@ def addDishData(request):
         recipe=json.dumps(recipe_data),
         last_done_date=date(2000, 1, 1))
     dish.save()
-    # process new units
-    if ingredients_data['new-units']:
-        print("new units")
-        all_units = IngredientUnit.objects.values_list(
-            'base_form', flat=True)
-        all_base_forms_set = set(all_units)
-        new_units = ingredients_data['new-units']
-        new_base_forms_set = {unit[0] for unit in new_units}
-        new_base_forms_set -= all_base_forms_set
-        if new_base_forms_set:
-            for unit in new_units:
-                if unit[0] in new_base_forms_set:
-                    ingredient_unit = IngredientUnit(
-                        base_form=unit[0],
-                        fraction_form=unit[1],
-                        few_form=unit[2],
-                        many_form=unit[3])
-                    ingredient_unit.save()
-                    new_units.append({
-                        'id': ingredient_unit.id,
-                        'name': ingredient_unit.base_form})
     # process new ingredients definitions
     if ingredients_data['new-ingredients']:
         print("new ingredients")
@@ -131,9 +108,6 @@ def addDishData(request):
                     default_quantity=i[1],
                     default_unit=ingredient_unit)
                 ingredient.save()
-                new_ingredients.append({
-                    'id': ingredient.id,
-                    'name': ingredient.name})
     # add all dish ingredients
     order_index = 0
     for i in ingredients_data['selected']:
@@ -170,9 +144,6 @@ def addDishData(request):
         for category_name in new_categories_names_set:
             category = Category(name=category_name)
             category.save()
-            new_categories.append({
-                'id': category.id,
-                'name': category.name})
     # add all dish categories
     if categories_data['selected']:
         order_index = 0
@@ -188,10 +159,7 @@ def addDishData(request):
                 category=category,
                 sequential_number=order_index)
             order_index += 1
-    return JsonResponse({'result': 'ok',
-            'new_units': new_units,
-            'new_ingredients': new_ingredients,
-            'new_categories': new_categories})
+    return JsonResponse({'result': 'ok'})
 
 def removeDish(request):
     return JsonResponse({'result': 'ok'})
@@ -207,6 +175,7 @@ def getComponents(request):
     request_type = request.GET['type']
     all_units = []
     all_ingredients = []
+    all_ingredient_types = []
     all_categories = []
     if 'units' in request_type:
         all_units = IngredientUnit.objects.values_list(
@@ -214,12 +183,16 @@ def getComponents(request):
     if 'ingredients' in request_type:
         all_ingredients = Ingredient.objects.values_list(
             'id', 'name', 'default_quantity', 'default_unit')
+    if 'ingredient_types' in request_type:
+        all_ingredient_types = IngredientType.objects.values_list(
+            'id', 'name')
     if 'categories' in request_type:
         all_categories = Category.objects.values_list('id', 'name')
     data = {
         'result': 'ok',
         'units': list(all_units),
         'ingredients': list(all_ingredients),
+        'ingredient_types': list(all_ingredient_types),
         'categories': list(all_categories)
     }
     return JsonResponse(data)

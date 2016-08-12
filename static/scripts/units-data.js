@@ -7,7 +7,7 @@ function UnitsData() {
     /// Class representing all available units that can be used
     /// to describe amount of ingredients needed to prepare recipe.
 
-    //id, jeden, pol, trzy, dwadziescia piec, database flag
+    //id, jeden, pol, trzy, dwadziescia piec
 	this.data = [];
 
     this.setData = function (data) {
@@ -20,7 +20,13 @@ function UnitsData() {
 
     this.index = function (unitIdOrName) {
         var i,
-            column = ((typeof unitIdOrName) === "number") ? 0 : 1;
+            column = 1;
+        // negated not a number check to see if argument
+        // is a number but in a string form
+        if (!isNaN(unitIdOrName)) {
+            unitIdOrName = parseInt(unitIdOrName, 10);
+            column = 0;
+        }
         // find index of specidief unit
         for (i in this.data) {
             if (this.data.hasOwnProperty(i) && (this.data[i][column] === unitIdOrName)) {
@@ -30,11 +36,11 @@ function UnitsData() {
         return undefined;
     };
 
-    this.add = function (id, one, half, three, twentyfive, flag) {
+    this.add = function (id, one, half, three, twentyfive) {
         var i;
         // make sure that we do not have already unit with specified name
         if (this.index(one) === undefined) {
-            this.data.push([id, one, half, three, twentyfive, flag]);
+            this.data.push([id, one, half, three, twentyfive]);
         }
     };
 
@@ -44,7 +50,6 @@ function UnitsData() {
             return;
         }
         this.data[index][0] = id;
-        this.data[index][5] = '';
     };
 
     this.getName = function (index) {
@@ -54,11 +59,11 @@ function UnitsData() {
         return 'undefined';
     };
 
-    this.getDatabaseFlag = function (index) {
+    this.getId = function (index) {
         if (index < this.count()) {
-            return this.data[index][5];
+            return this.data[index][0];
         }
-        return '';
+        return 0;
     };
 
     this.getAllForms = function (index) {
