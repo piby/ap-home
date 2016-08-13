@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^get-dish-data$', views.getDishData, name='getDishData'),
     url(r'^add-dish-data$', views.addDishData, name='addDishData'),
     url(r'^update-dish-data$', views.updateDishData, name='updateDishData'),
+    url(r'^remove-dish-data$', views.removeDishData, name='removeDishData'),
     url(r'^get-components$', views.getComponents, name='getComponents')
 ]

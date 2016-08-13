@@ -24,7 +24,7 @@
 
 <div data-role="page" id="meal-selection-page">
   <div data-role="panel" id="main-panel" data-display="reveal" data-position="left" data-theme="a">
-    <a href="#" id="add-dish" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
+    <a href="#" id="add-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
   </div>
   <div data-role="header">
     <h1>CookBook {{ version }}</h1>
@@ -193,7 +193,14 @@
 
 <div data-role="page" id="dish-page">
   <div data-role="panel" id="dish-panel" data-display="reveal" data-position="left" data-theme="a">
-    <a href="#" id="remove-dish" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
+    <a href="#" id="remove-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
+  </div>
+  <div data-role="popup" id="remove-dish-popup" data-theme="a" class="ui-corner-all">
+    <form style="padding:10px 20px;">
+      <h3>Usuniecie dania</h3>
+      <input id="remove-dish-password" placeholder="Haslo" value="" type="password">
+      <a href="#" id="remove-dish" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+    </form>
   </div>
   <div data-role="header">
     <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
@@ -224,9 +231,12 @@
     dishPropertiesHandler.initialize(globals);
 
     $( document ).ready(function() {
-        $('#add-dish').on('tap', function() {
+        $('#add-dish-option').on('tap', function() {
             dishPropertiesHandler.synchronizeComponents();
             $.mobile.changePage($('#dish-properties-page'));
+        });
+        $('#remove-dish-option').on('tap', function() {
+            $('#remove-dish-popup').popup('open');
         });
 
         // get from server all dish ingreadiens, units and categories

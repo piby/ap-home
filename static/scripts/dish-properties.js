@@ -60,6 +60,7 @@ function IngredientProperties() {
         // Set button callbacks.
         $('#show-add-ingredient-popup').on('tap', function (event) { self.showAddIngredientPopup(); });
         $('#add-new-ingredient').on('tap', function (event) { self.addNewIngredientDefinition(); });
+        $('#edit-ingredient').on('tap', function (event) { self.editIngredient(); });
     };
 
     /// Method called when list of available ingredients should be updated.
@@ -184,7 +185,7 @@ function IngredientProperties() {
         // clear form content
         $('#edit-ingredient-quantity').val(1);
         $('#edit-ingredient-unit-input').val("");
-        $('#edit-ingredient-popup').popup('open');
+        $('#edit-ingredient-popup').attr('data-index', index).popup('open');
     };
 
     this.constructSelectmenu = function (listTagId, listData) {
@@ -212,15 +213,6 @@ function IngredientProperties() {
         $('#add-ingredient-name').val("");
         $('#add-ingredient-quantity').val(1);
         $('#add-ingredient-popup').popup('open');
-    };
-
-    /// Callback used when data entered to edit-ingredient popup was confirmed.
-    this.applyUnitAndQuantity = function (index, unit, quantity) {
-        var itemChildren = $('#ingredinets-table tr:nth-child(' + index + ') td');
-        itemChildren.eq(1).text(quantity);
-        unit = this.unitsData.index(unit);
-        itemChildren.eq(2).text(this.unitsData.decline(unit, quantity));
-        $('#edit-ingredient-popup').popup('close');
     };
 
     /// Callback used when new ingredient was defined.
@@ -256,6 +248,26 @@ function IngredientProperties() {
         // update list of ingredients
         this.synchronizeIngredientList();
 	};
+
+    this.editIngredient = function () {
+        var editIngredientPopup = $('#edit-ingredient-popup'),
+            index = editIngredientPopup.attr('data-index'),
+            quantity = $('#edit-ingredient-quantity').val(),
+            unit = $('#edit-ingredient-unit').val(),
+            itemChildren;
+        // validate data
+        quantity = parseFloat(quantity);
+        if (isNaN(quantity) || (quantity === undefined)) {
+            return;
+        }
+        // apply changes
+        itemChildren = $('#ingredinets-table tr:nth-child(' + index + ') td');
+        itemChildren.eq(1).text(quantity);
+        unit = this.unitsData.index(unit);
+        itemChildren.eq(2).text(this.unitsData.decline(unit, quantity));
+        // close dialog
+        editIngredientPopup.popup('close');
+    };
 
     this.getContent = function () {
         var i = 0,

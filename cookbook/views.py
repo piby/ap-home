@@ -161,12 +161,23 @@ def addDishData(request):
             order_index += 1
     return JsonResponse({'result': 'ok'})
 
-def removeDish(request):
-    return JsonResponse({'result': 'ok'})
-
 def updateDishData(request):
     data = request.GET['data']
     return JsonResponse({'result': 'ok'})
+
+def removeDishData(request):
+    if general_data['password'] != password:
+        return JsonResponse({'result': 'invalid pssword'})
+    requested_id = request.GET['id']
+    try:
+        dish = Dish.objects.get(pk=requested_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'result': 'specified dish is not in data base'})
+    DishPhoto.objects.filter(dish=dish).delete()
+    DishIngredient.objects.filter(dish=dish).delete()
+    DishCategory.objects.filter(dish=dish).delete()
+    dish.delete()
+    return JsonResponse({ 'result': 'ok' })
 
 @csrf_protect
 def getComponents(request):

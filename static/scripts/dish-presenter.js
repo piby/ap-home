@@ -8,6 +8,7 @@ function DishPresenter() {
     this.ingredientsData  = undefined;
     this.unitsData  = undefined;
     this.categoriesData  = undefined;
+    this.currentDishId = undefined;
 
     this.initialize = function (globals) {
         var self = this;
@@ -19,6 +20,8 @@ function DishPresenter() {
         $('.ui-icon-soup').on('tap', function () { self.requestDishList(1); });
         $('.ui-icon-dinner').on('tap', function () { self.requestDishList(2); });
         $('.ui-icon-desert').on('tap', function () { self.requestDishList(3); });
+
+        $('#remove-dish').on('tap', function () { self.removeDishData(); });
     };
 
     this.requestDishList = function (meal) {
@@ -52,7 +55,7 @@ function DishPresenter() {
         $('#dish-list li').on('tap', function (event) { self.requestDishData($(this).attr('data-id')); });
         $.mobile.changePage($('#dish-list-page'));
     };
-    
+
     this.requestDishData = function (dishId) {
         var self = this;
         $.ajax({
@@ -78,6 +81,7 @@ function DishPresenter() {
             unit,
             i,
             j;
+        this.currentDishId = dishId;
         // set dish name
         $(itemId + ' div h1').html(data.name);
         // set dish photo
@@ -133,6 +137,23 @@ function DishPresenter() {
         }
         $('#dish-keywords').html(text);
         $.mobile.changePage($('#dish-page'));
+    };
+    
+    this.removeDishData = function () {
+        var password = $('#remove-dish-password').val();
+        this.requestDishRemove(this.currentDishId, password);
+    };
+
+    this.requestDishRemove = function (dishId, password) {
+        var self = this;
+        $.ajax({
+            type: "GET",
+            url: "remove-dish-data",
+            data: "{id=" + dishId + ", password=" + password + "}",
+            datatype: "json",
+            error: function (data) { alert('Error'); },
+            success: function (data) { self.goToHomeScreen(); }
+        });
     };
 
     this.goToHomeScreen = function () {
