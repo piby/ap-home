@@ -29,7 +29,7 @@ function DishPresenter() {
         $.ajax({
             type: "GET",
             url: "list-dishes",
-            data: "meal=" + meal,
+            data: { meal: meal },
             datatype: "json",
             error: function (data) { alert('Error'); },
             success: function (data) { self.showDishList(data); }
@@ -52,7 +52,7 @@ function DishPresenter() {
         if ($(itemId).hasClass('ui-listview')) {
             $(itemId).listview("refresh");
         }
-        $('#dish-list li').on('tap', function (event) { self.requestDishData($(this).attr('data-id')); });
+        $('#dish-list li[data-id]').on('tap', function (event) { self.requestDishData($(this).attr('data-id')); });
         $.mobile.changePage($('#dish-list-page'));
     };
 
@@ -61,7 +61,7 @@ function DishPresenter() {
         $.ajax({
             type: "GET",
             url: "get-dish-data",
-            data: "id=" + dishId,
+            data: { id: dishId },
             datatype: "json",
             error: function (data) { alert('Error'); },
             success: function (data) { self.showDishData(dishId, data); }
@@ -149,7 +149,7 @@ function DishPresenter() {
         $.ajax({
             type: "GET",
             url: "remove-dish-data",
-            data: "{id=" + dishId + ", password=" + password + "}",
+            data: { id: dishId, password: password },
             datatype: "json",
             error: function (data) { alert('Error'); },
             success: function (data) { self.goToHomeScreen(); }

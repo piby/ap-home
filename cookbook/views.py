@@ -85,26 +85,26 @@ def addDishData(request):
     dish.save()
     # process new ingredients definitions
     if ingredients_data['new-ingredients']:
-        print("new ingredients")
         all_ingredients = Ingredient.objects.values_list(
             'name', flat=True)
         all_ingredient_names_set = set(all_ingredients)
-        print(all_ingredient_names_set)
         new_ingredients = ingredients_data['new-ingredients']
         new_ingredient_names_set = {i[0] for i in new_ingredients}
         new_ingredient_names_set -= all_ingredient_names_set
         print(new_ingredient_names_set)
         if new_ingredient_names_set:
             for i in new_ingredients:
+                print(i)
                 if i[0] not in new_ingredient_names_set:
                     continue
                 try:
                     ingredient_unit = IngredientUnit.objects.get(
-                        base_form__iexact=i[2])
+                        pk=i[2])
                 except ObjectDoesNotExist:
                     continue
                 ingredient = Ingredient(
                     name=i[0],
+                    #category_type=
                     default_quantity=i[1],
                     default_unit=ingredient_unit)
                 ingredient.save()
@@ -166,7 +166,7 @@ def updateDishData(request):
     return JsonResponse({'result': 'ok'})
 
 def removeDishData(request):
-    if general_data['password'] != password:
+    if request.GET['password'] != password:
         return JsonResponse({'result': 'invalid pssword'})
     requested_id = request.GET['id']
     try:

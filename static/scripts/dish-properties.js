@@ -221,10 +221,9 @@ function IngredientProperties() {
             ingredient,
             name = $('#add-ingredient-name').val(),
             type = $('#add-ingredient-type').val(),
-            defaultQuantity = $('#add-ingredient-quantity').val(),
-            defaultUnit = $('#add-ingredient-unit').val();
+            defaultQuantity = parseFloat($('#add-ingredient-quantity').val()),
+            defaultUnit = parseInt($('#add-ingredient-unit').val(), 10);
         // validate data
-        defaultQuantity = parseFloat(defaultQuantity);
         if (isNaN(defaultQuantity) || (defaultQuantity === undefined)) {
             return;
         }
@@ -278,7 +277,7 @@ function IngredientProperties() {
             ingredientData,
             dishIngredinetsHtml = $('#ingredinets-table tr'),
             unit;
-        // get all newly added (in this sesion) ingredients
+        // get all newly added (in this sesion) ingredients definitions
         for (i = 0; i < this.ingredientsData.count(); i += 1) {
             if (this.ingredientsData.getDatabaseFlag(i) === 'add') {
                 ingredient = this.ingredientsData.get(i);
@@ -294,10 +293,12 @@ function IngredientProperties() {
         for (i = 0; i < dishIngredinetsHtml.length; i += 1) {
             ingredientData = $(dishIngredinetsHtml[i]).children();
             unit = this.unitsData.getBaseForm($(ingredientData[2]).text());
+            unit = this.unitsData.index(unit);
+            unit = this.unitsData.getId(unit);
             dishIngredinetsArray.push([
-                $(ingredientData[0]).text(),     // name
-                $(ingredientData[1]).text(),     // quantity
-                unit			                 // unit
+                $(ingredientData[0]).text(),                // name
+                parseFloat($(ingredientData[1]).text()),    // quantity
+                parseInt(unit, 10)	                        // unit
             ]);
         }
 

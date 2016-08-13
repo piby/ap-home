@@ -24,6 +24,9 @@
 
 <div data-role="page" id="meal-selection-page">
   <div data-role="panel" id="main-panel" data-display="reveal" data-position="left" data-theme="a">
+    <a href="#" id="dish-plan-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Plan posilkow</a>
+    <a href="#" id="shopping-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista zakupow</a>
+    <a href="#" id="ingredient-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista skladnikow</a>
     <a href="#" id="add-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
   </div>
   <div data-role="header">
@@ -193,6 +196,7 @@
 
 <div data-role="page" id="dish-page">
   <div data-role="panel" id="dish-panel" data-display="reveal" data-position="left" data-theme="a">
+    <a href="#" id="add-dish-to-plan-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Dodaj do planu</a>
     <a href="#" id="remove-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
   </div>
   <div data-role="popup" id="remove-dish-popup" data-theme="a" class="ui-corner-all">
@@ -203,7 +207,7 @@
     </form>
   </div>
   <div data-role="header">
-    <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
+    <a href="#dish-list-page" class="ui-btn ui-corner-all ui-icon-bars ui-btn-icon-left">Lista dań</a>
     <h1>Dish name</h1>
   </div>
   <div data-role="main" class="ui-content">
