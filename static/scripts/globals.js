@@ -59,8 +59,9 @@ function Globals() {
                 this.ingredientsData.add(
                     dataRow[0], // id
                     dataRow[1], // name
-                    dataRow[2], // defaultQuantity
-                    dataRow[3], // defaultUnit
+                    dataRow[2], // type
+                    dataRow[3], // defaultQuantity
+                    dataRow[4], // defaultUnit
                     ""          // flag
                 );
             }

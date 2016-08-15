@@ -220,7 +220,7 @@ function IngredientProperties() {
         var i,
             ingredient,
             name = $('#add-ingredient-name').val(),
-            type = $('#add-ingredient-type').val(),
+            type = parseInt($('#add-ingredient-type').val(), 10),
             defaultQuantity = parseFloat($('#add-ingredient-quantity').val()),
             defaultUnit = parseInt($('#add-ingredient-unit').val(), 10);
         // validate data
@@ -240,6 +240,7 @@ function IngredientProperties() {
         this.ingredientsData.add(
             -1,
             cleanNameString(name),
+            type,
             defaultQuantity,
             defaultUnit,
             'add'
@@ -283,6 +284,7 @@ function IngredientProperties() {
                 ingredient = this.ingredientsData.get(i);
                 addedIngredientsData.push([
                     ingredient.name,
+                    ingredient.categoryType,
                     ingredient.defaulQuantity,
                     ingredient.defaulUnit
                 ]);

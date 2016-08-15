@@ -91,21 +91,26 @@ def addDishData(request):
         new_ingredients = ingredients_data['new-ingredients']
         new_ingredient_names_set = {i[0] for i in new_ingredients}
         new_ingredient_names_set -= all_ingredient_names_set
-        print(new_ingredient_names_set)
         if new_ingredient_names_set:
             for i in new_ingredients:
-                print(i)
                 if i[0] not in new_ingredient_names_set:
                     continue
+                # find ingredient type
+                try:
+                    ingredient_type = IngredientType.objects.get(
+                        pk=i[1])
+                except ObjectDoesNotExist:
+                    continue
+                # find ingredient unit
                 try:
                     ingredient_unit = IngredientUnit.objects.get(
-                        pk=i[2])
+                        pk=i[3])
                 except ObjectDoesNotExist:
                     continue
                 ingredient = Ingredient(
                     name=i[0],
-                    #category_type=
-                    default_quantity=i[1],
+                    category_type=ingredient_type,
+                    default_quantity=i[2],
                     default_unit=ingredient_unit)
                 ingredient.save()
     # add all dish ingredients
@@ -121,7 +126,7 @@ def addDishData(request):
         # find ingredient unit record
         try:
             ingredient_unit = IngredientUnit.objects.get(
-                base_form__iexact=i[2])
+                pk__iexact=i[2])
         except ObjectDoesNotExist:
             message = "missing {0} ingredient unit".format(i[2])
             return JsonResponse({'result': message})
@@ -193,7 +198,7 @@ def getComponents(request):
             'id', 'base_form', 'fraction_form', 'few_form', 'many_form')
     if 'ingredients' in request_type:
         all_ingredients = Ingredient.objects.values_list(
-            'id', 'name', 'default_quantity', 'default_unit')
+            'id', 'name', 'category_type', 'default_quantity', 'default_unit')
     if 'ingredient_types' in request_type:
         all_ingredient_types = IngredientType.objects.values_list(
             'id', 'name')
