@@ -26,12 +26,12 @@ function GeneralProperties() {
         }
         // construct object containing all information
         return {
-            'edited': edited,
-            'id': id,
-            'name': cleanNameString(name),
-            'type': type,
-            'photo': photo,
-            'password': password
+            edited: edited,
+            id: id,
+            name: cleanNameString(name),
+            type: type,
+            photo: photo,
+            password: password
         };
     };
 
@@ -305,9 +305,9 @@ function IngredientProperties() {
         }
 
         return {
-            'edited': edited,
-            'new-ingredients': addedIngredientsData,
-            'selected': dishIngredinetsArray
+            edited: edited,
+            added: addedIngredientsData,
+            selected: dishIngredinetsArray
         };
     };
 }
@@ -699,9 +699,9 @@ function CategoryProperties() {
             selectedCategories.push($(categoriesHtml[i]).text());
         }
         return {
-            'edited': edited,
-            'new': newCategories,
-            'selected': selectedCategories
+            edited: edited,
+            added: newCategories,
+            selected: selectedCategories
         };
     };
 }
@@ -747,40 +747,37 @@ function DishProperies() {
     this.applyDishProperties = function () {
         var self = this,
             dishData = {
-                'general': this.generalProperties.getContent(),
-                'ingredients': this.ingredientProperties.getContent(),
-                'recipe': this.recipeProperties.getContent(),
-                'categories': this.categoryProperties.getContent()
+                general: this.generalProperties.getContent(),
+                ingredients: this.ingredientProperties.getContent(),
+                recipe: this.recipeProperties.getContent(),
+                categories: this.categoryProperties.getContent()
             };
         $.ajax({
             type: "POST",
             url: "add-dish-data",
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(dishData),
-            dataType: 'text',
+            dataType: 'json',
             error: function (data) { alert('Error'); },
             success: function (data) { self.applyNewComponents(data); }
         });
     };
     
     this.applyNewComponents = function (data) {
-        var component;
+        var i;
         if (data.result === "ok") {
             // apply ids to components that were just added to database on the server
-            for (component in data.new_units) {
-                if (this.unitsData.hasOwnProperty(component)) {
-                    this.unitsData.updateId(component.name, component.id);
-                }
+            for (i = 0; i < data.new_ingredients.length; i += 1) {
+                this.ingredientsData.updateId(
+                    data.new_ingredients[i].name,
+                    data.new_ingredients[i].id
+                );
             }
-            for (component in data.new_ingredients) {
-                if (this.ingredientsData.hasOwnProperty(component)) {
-                    this.ingredientsData.updateId(component.name, component.id);
-                }
-            }
-            for (component in data.categoriesData) {
-                if (this.data.hasOwnProperty(component)) {
-                    this.categoriesData.updateId(component.name, component.id);
-                }
+            for (i = 0; data.new_categories.length; i += 1) {
+                this.categoriesData.updateId(
+                    data.new_categories[i].name,
+                    data.new_categories[i].id
+                );
             }
         }
         this.goToHomeScreen();

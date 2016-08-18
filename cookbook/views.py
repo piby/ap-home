@@ -62,6 +62,8 @@ def getDishData(request):
 
 @csrf_protect
 def addDishData(request):
+    new_ingredients_response = []
+    new_categories_response = []
     data = json.loads(request.body.decode("utf-8"))
     # print(json.dumps(data, indent=4, sort_keys=True)) ### TO BE REMOVED
     general_data = data['general']
@@ -84,11 +86,11 @@ def addDishData(request):
         last_done_date=date(2000, 1, 1))
     dish.save()
     # process new ingredients definitions
-    if ingredients_data['new-ingredients']:
+    if ingredients_data['added']:
         all_ingredients = Ingredient.objects.values_list(
             'name', flat=True)
         all_ingredient_names_set = set(all_ingredients)
-        new_ingredients = ingredients_data['new-ingredients']
+        new_ingredients = ingredients_data['added']
         new_ingredient_names_set = {i[0] for i in new_ingredients}
         new_ingredient_names_set -= all_ingredient_names_set
         if new_ingredient_names_set:
@@ -113,6 +115,9 @@ def addDishData(request):
                     default_quantity=i[2],
                     default_unit=ingredient_unit)
                 ingredient.save()
+                new_ingredients_response.append({
+                    'id': ingredient.id,
+                    'name': ingredient.name})
     # add all dish ingredients
     order_index = 0
     for i in ingredients_data['selected']:
@@ -140,15 +145,18 @@ def addDishData(request):
         order_index += 1
         dish_ingredient.save()
     # process new category definitions
-    if categories_data['new']:
+    if categories_data['added']:
         all_categories = Category.objects.values_list(
             'name', flat=True)
         all_categories_names_set = set(all_categories)
-        new_categories_names_set = set(categories_data['new'])
+        new_categories_names_set = set(categories_data['added'])
         new_categories_names_set -= all_categories_names_set
         for category_name in new_categories_names_set:
             category = Category(name=category_name)
             category.save()
+            new_categories_response.append({
+                'id': category.id,
+                'name': category.name})
     # add all dish categories
     if categories_data['selected']:
         order_index = 0
@@ -164,7 +172,9 @@ def addDishData(request):
                 category=category,
                 sequential_number=order_index)
             order_index += 1
-    return JsonResponse({'result': 'ok'})
+    return JsonResponse({'result': 'ok',
+        'new_ingredients': new_ingredients_response,
+        'new_categories': new_categories_response})
 
 def updateDishData(request):
     data = request.GET['data']
