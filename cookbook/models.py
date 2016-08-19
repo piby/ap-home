@@ -1,47 +1,58 @@
 from django.db import models
 
-'''
-class Ingredients(models.Model):
-    name = models.CharField(max_length=50)
-	default_unit = models.ForeignKey(IngredientUnits)
-	default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
+class IngredientUnit(models.Model):
+    base_form = models.CharField(max_length=50)
+    fraction_form = models.CharField(max_length=50)
+    few_form = models.CharField(max_length=50)
+    many_form = models.CharField(max_length=50)
 
-class IngredientUnits(models.Model):
+# nabial/tluszcze, slodycze, warzywa, owoce, przetwory mleczne,
+# produkty miesne, ryby, napoje, pieczywo, konserwy, makaron/ryz/kasza,
+# produkty sypkie, sosy, mrozonki, dania gotowe, inne
+# https://www.tesco.pl/marki-i-uslugi/produkty-tesco/artykuly-spozywcze
+class IngredientType(models.Model):
     name = models.CharField(max_length=50)
 
-class Categories(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(max_length=50)
+    category_type = models.ForeignKey(IngredientType)
+    default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    default_unit = models.ForeignKey(IngredientUnit)
 
 class Dish(models.Model):
     MEAL_TYPES = (
-        ('B', 'Breakfast'),
-        ('S', 'Soup'),
-        ('M', 'Main'),
-        ('D', 'Desert')
+        ('0', 'Breakfast'),
+        ('1', 'Soup'),
+        ('2', 'Main'),
+        ('3', 'Desert')
     )
+    name = models.CharField(max_length=150)
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
-    reciepe = models.CharField(max_length=4000)
-    done_count = models.IntegerField(default=0)
+    recipe = models.CharField(max_length=4000)
     last_done_date = models.DateField()
 
-class DishPhotos(models.Model):
+class DishPhoto(models.Model):
     dish = models.ForeignKey(Dish)
-    photo = models.CharField(max_length=200)
+    file_name = models.CharField(max_length=200)
     sequential_number = models.CharField(max_length=1)
 
-class DishIngredients(models.Model):
+class DishIngredient(models.Model):
     dish = models.ForeignKey(Dish)
-    ingredient = models.ForeignKey(Ingredients)
-	unit = models.ForeignKey(IngredientUnits)
-	quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    ingredient = models.ForeignKey(Ingredient)
+    quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    unit = models.ForeignKey(IngredientUnit)
     sequential_number = models.CharField(max_length=1)
 
-class DishCategories(models.Model):
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+class DishCategory(models.Model):
     dish = models.ForeignKey(Dish)
-    category = models.ForeignKey(Categories)
+    category = models.ForeignKey(Category)
     sequential_number = models.CharField(max_length=1)
 
 class MealPlan:
     date = models.DateField()
     dish = models.ForeignKey(Dish)
-'''
+    description = models.CharField(max_length=50)
+    sequential_number = models.CharField(max_length=1)

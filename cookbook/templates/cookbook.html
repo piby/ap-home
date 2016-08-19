@@ -13,16 +13,21 @@
   <script language="javascript" src="{% static "scripts/main.js" %}"></script>
   <script language="javascript" src="{% static "scripts/utils.js" %}"></script>
   <script language="javascript" src="{% static "scripts/units-data.js" %}"></script>
-  <script language="javascript" src="{% static "scripts/keywords-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/categories-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/ingredients-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/ingredient-types-data.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/globals.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-properties.js" %}"></script>
-
+  <script language="javascript" src="{% static "scripts/dish-presenter.js" %}"></script>
 </head>
 <body>
 
 <div data-role="page" id="meal-selection-page">
   <div data-role="panel" id="main-panel" data-display="reveal" data-position="left" data-theme="a">
-    <a href="#dish-properties-page" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
+    <a href="#" id="dish-plan-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Plan posilkow</a>
+    <a href="#" id="shopping-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista zakupow</a>
+    <a href="#" id="ingredient-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista skladnikow</a>
+    <a href="#" id="add-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
   </div>
   <div data-role="header">
     <h1>CookBook {{ version }}</h1>
@@ -34,7 +39,7 @@
     <a href="#" class="ui-btn ui-meal-button ui-icon-desert"></a>
   </div>
   <div data-role="footer">
-    <h1>Select meal</h1>
+    <h1>by pbyszewski</h1>
   </div>
 </div> 
 
@@ -49,40 +54,25 @@
 
     <div data-role="popup" id="add-ingredient-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
-        <h3>Nowy skladnik</h3>
+        <h3>Nowy składnik</h3>
         <input id="add-ingredient-name" value="" placeholder="Nazwa" data-theme="a" type="text">
-        <input id="add-ingredient-quantity" value="" placeholder="1" data-theme="a" type="text">
-		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="add-ingredient-unit" placeholder="Wybierz jednostke" value="">
-		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#add-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-		  <div id="add-ingredient-all-units-list" class="ui-controlgroup-controls">
-		  </div>
+        <select id="add-ingredient-type" data-native-menu="false">
+        </select>
+        <div class="ui-field-contain">
+          <input id="add-ingredient-quantity" value="" placeholder="1" data-theme="a" type="text">
+          <select id="add-ingredient-unit" data-native-menu="false">
+          </select>
         </div>
-      </form>
-    </div>
-    <div data-role="popup" id="add-ingredient-unit-popup" data-theme="a" class="ui-corner-all">
-      <form style="padding:10px 20px;">
-        <h3>Formy nowej jednostki</h3>
-        <input value="" placeholder="jeden/jedna/jedno" data-theme="a" type="text">
-        <input value="" placeholder="pol" data-theme="a" type="text">
-        <input value="" placeholder="trzy" data-theme="a" type="text">
-        <input value="" placeholder="dwadziescia piec" data-theme="a" type="text">
-        <a href="#" id="add-new-unit" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+        <a href="#" id="add-new-ingredient" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
     <div data-role="popup" id="edit-ingredient-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
         <h3>Edycja skladnika</h3>
         <input id="edit-ingredient-quantity" value="" placeholder="Ilosc" data-theme="a" type="text">
-		<!-- unit finder -->
-		<div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-		  <input data-type="search" data-enhanced="true" data-inset="false" id="edit-ingredient-unit" placeholder="Wybierz jednostke" value="">
-		</div>
-		<div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#edit-ingredient-unit" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-		  <div id="edit-ingredient-all-units-list" class="ui-controlgroup-controls">
-		  </div>
-        </div>
+        <select id="edit-ingredient-unit" data-native-menu="false">
+        </select>
+        <a href="#" id="edit-ingredient" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
     <div data-role="popup" id="edit-recipe-section-name-popup" data-theme="a" class="ui-corner-all">
@@ -105,10 +95,10 @@
         <a href="#" id="edit-recipe-point-name" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
-    <div data-role="popup" id="add-keyword-popup" data-theme="a" class="ui-corner-all">
+    <div data-role="popup" id="add-category-popup" data-theme="a" class="ui-corner-all">
       <form style="padding:10px 20px;">
-        <input id="new-keyword" value="" placeholder="Nowa kategoria" data-theme="a" type="text">
-        <a href="#" id="add-keyword" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+        <input id="new-category" value="" placeholder="Nowa kategoria" data-theme="a" type="text">
+        <a href="#" id="add-category" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
       </form>
     </div>
 
@@ -127,7 +117,7 @@
             <input id="dish-type-desert" name="dish-type" value="3" type="radio">
             <label for="dish-type-desert">Deser</label>
           </fieldset>
-      	  <button type="button" data-icon="gear" data-iconpos="left" data-mini="true" data-inline="true" id="add-image">Ustaw zdjecie</button>
+          <input data-clear-btn="true" name="dish-image-path" id="dish-image-path" value="" type="file">
       	</div>
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
@@ -142,8 +132,7 @@
             <div id="all-ingredients-list" class="ui-controlgroup-controls">
             </div>
           </div>
-          <a href="#" id="show-add-ingredient-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-corner-all ui-btn-inline">Dodaj nowy skladnik</a>
-          <a href="#" id="show-add-ingredient-unit-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-corner-all ui-btn-inline">Dodaj nowa jednostke</a>
+          <a href="#" id="show-add-ingredient-popup" class="ui-btn ui-btn-icon-left ui-icon-plus ui-mini ui-corner-all ui-btn-inline">Dodaj nowy skladnik</a>
 	    </div>
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
@@ -157,24 +146,24 @@
 
 	    <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
 	      <h1>Kategorie</h1>
-	      <!-- list of selected keywords -->
-	      <div id="keywords-list">
+	      <!-- list of selected categories -->
+	      <div id="categories-list">
           </div>
-          <!-- keyword finder -->
+          <!-- category finder -->
           <div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear">
-            <input data-type="search" data-enhanced="true" data-inset="false" id="available-keywords" placeholder="Wyszukaj istniejaca kategorie" value="">
+            <input data-type="search" data-enhanced="true" data-inset="false" id="available-categories" placeholder="Wyszukaj istniejaca kategorie" value="">
           </div>
-          <div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#available-keywords" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
-            <div id="all-keywords-list" class="ui-controlgroup-controls">
+          <div data-role="controlgroup" data-enhanced="true" data-filter="true" data-filter-reveal="true" data-input="#available-categories" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all">
+            <div id="all-categories-list" class="ui-controlgroup-controls">
             </div>
           </div>
-          <button type="button" data-icon="plus" data-iconpos="left" data-mini="true" data-inline="true" id="add-new-keyword">Dodaj nowa kategorie</button>
+          <button type="button" id="add-new-category" class="ui-btn ui-btn-icon-left ui-icon-plus ui-mini ui-corner-all ui-btn-inline">Dodaj nowa kategorie</button>
         </div>
       </div>
 
 	  <!-- add new category, that was not used before -->
       </br>
-      <input id="secret-password" placeholder="Haslo" value="" type="text">
+      <input id="new-dish-password" placeholder="Haslo" value="" type="password">
 	  <fieldset class="ui-grid-a">
         <div class="ui-block-a">
           <a href="#" id="dish-defined" class="ui-btn ui-corner-all">Gotowe</a>
@@ -206,18 +195,32 @@
 </div>
 
 <div data-role="page" id="dish-page">
+  <div data-role="panel" id="dish-panel" data-display="reveal" data-position="left" data-theme="a">
+    <a href="#" id="add-dish-to-plan-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Dodaj do planu</a>
+    <a href="#" id="edit-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Edytuj</a>
+    <a href="#" id="remove-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
+  </div>
+  <div data-role="popup" id="remove-dish-popup" data-theme="a" class="ui-corner-all">
+    <form style="padding:10px 20px;">
+      <h3>Usuniecie dania</h3>
+      <input id="remove-dish-password" placeholder="Haslo" value="" type="password">
+      <a href="#" id="remove-dish" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+    </form>
+  </div>
   <div data-role="header">
-    <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
+    <a href="#dish-list-page" class="ui-btn ui-corner-all ui-icon-bars ui-btn-icon-left">Lista dań</a>
     <h1>Dish name</h1>
   </div>
   <div data-role="main" class="ui-content">
     <img id="dish-photo" src="" alt="">
-	<h3>Skladniki</h3>
+      <h3>Składniki</h3>
       <ul id="dish-ingredients"></ul>
-    <h3>Przepis</h3>
-      <ol id="dish-recipe"></ol>
- 	<h3>Slowa kluczowe</h3>
-      <p id="dish-keywords"></p>
+      <h3>Przepis</h3>
+      <div id="dish-recipe"></div>
+      <!--
+      <h3>Kategorie</h3>
+      -->
+      <p id="dish-categories"></p>
   </div>
   <div data-role="footer">
     <h1></h1>
@@ -225,12 +228,26 @@
 </div>
 
 <script>
+    var globals = new Globals();
+    var dishPresenter = new DishPresenter();
+    var dishPropertiesHandler = new DishProperies();
+
+    dishPresenter.initialize(globals);
+    dishPropertiesHandler.initialize(globals);
+
     $( document ).ready(function() {
-        $('.ui-icon-breakfast').on('tap', function() { requestDishList('breakfast'); });
-        $('.ui-icon-soup').on('tap', function() { requestDishList('soup'); });
-        $('.ui-icon-dinner').on('tap', function() { requestDishList('dinner'); });
-        $('.ui-icon-desert').on('tap', function() { requestDishList('desert'); });
+        $('#add-dish-option').on('tap', function() {
+            dishPropertiesHandler.synchronizeComponents();
+            $.mobile.changePage($('#dish-properties-page'));
+        });
+        $('#remove-dish-option').on('tap', function() {
+            $('#remove-dish-popup').popup('open');
+        });
+
+        // get from server all dish ingreadiens, units and categories
+        globals.requestComponents();
     });
+
     $( document ).on('swipeleft swiperight', "#meal-selection-page", function( event ) {
 		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
 			if ( event.type === "swiperight" ) {
@@ -238,13 +255,13 @@
 			}
         }
 	});
-
-    var ingredientsData = new IngredientsData();
-    var unitsData = new UnitsData();
-    var keywordsData = new KeywordsData();
-    var dishPropertiesHandler = new DishProperies();
-    dishPropertiesHandler.initialize(ingredientsData, unitsData, keywordsData);
-
+    $( document ).on('swipeleft swiperight', "#dish-page", function( event ) {
+		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
+			if ( event.type === "swiperight" ) {
+				$( "#dish-panel" ).panel( "open" );
+			}
+        }
+	});
 </script>
 
 </body>

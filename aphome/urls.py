@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('',
-    url(r'^cookbook/', include('cookbook.urls')),
-)
+urlpatterns = [
+    url(r'^cookbook/', include('cookbook.urls'))
+]
