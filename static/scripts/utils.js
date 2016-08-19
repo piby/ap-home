@@ -37,6 +37,9 @@ function cleanNameString(string) {
 }
 
 function cleanQuantity(value) {
+    if ($.type(value) === "string") {
+        value = parseFloat(value);
+    }
     var floorValue = Math.floor(value);
     return (value % 1 === 0) ? floorValue : value;
 }

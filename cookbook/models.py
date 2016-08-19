@@ -54,4 +54,5 @@ class DishCategory(models.Model):
 class MealPlan:
     date = models.DateField()
     dish = models.ForeignKey(Dish)
+    description = models.CharField(max_length=50)
     sequential_number = models.CharField(max_length=1)
