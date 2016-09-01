@@ -10,6 +10,18 @@ function DishPresenter() {
     this.categoriesData  = undefined;
     this.currentDishId = undefined;
 
+    this.$dishList = $('#dish-list');
+    this.$dishHeader = $('#dish-page div h1');
+    this.$dishPhoto = $('#dish-photo');
+    this.$dishIngredients = $('#dish-ingredients');
+    this.$dishRecipe = $('#dish-recipe');
+    this.$dishRecipeSection = $('#dish-recipe-section');
+    this.$dishKeywords = $('#dish-keywords');
+    this.$removeDishPassword = $('#remove-dish-password');
+    this.$dishListPage = $('#dish-list-page');
+    this.$dishPage = $('#dish-page');
+    this.$mealSelectionPage = $("#meal-selection-page");
+
     this.initialize = function (globals) {
         var self = this;
         this.ingredientsData  = globals.ingredientsData;
@@ -39,18 +51,17 @@ function DishPresenter() {
     this.showDishList = function (data) {
         var text = '',
             self = this,
-            itemId = '#dish-list',
             i = 0;
         for (i in data) {
             if (data.hasOwnProperty(i)) {
                 text += '<li data-id="' + data[i].id + '"><a href=\"#\">' + data[i].name + '</a></li>\n';
             }
         }
-        $(itemId).html(text);
+        this.$dishList.html(text);
         // if #dish-list has children then it was created
         // earlier and its content should be refreshed
-        if ($(itemId).hasClass('ui-listview')) {
-            $(itemId).listview("refresh");
+        if (this.$dishList.hasClass('ui-listview')) {
+            this.$dishList.listview("refresh");
         }
         $('#dish-list li[data-id]').on('tap', function (event) { self.requestDishData($(this).attr('data-id')); });
         $.mobile.changePage($('#dish-list-page'));
@@ -73,23 +84,20 @@ function DishPresenter() {
             sectionCount,
             section,
             points,
-            itemId = '#dish-page',
             ingredient,
             index,
             name,
             quantity,
             unit,
             i,
-            j;
+            j,
+            imagePath = '/static/images/dish/';
         this.currentDishId = dishId;
         // set dish name
-        $(itemId + ' div h1').html(data.name);
+        this.$dishHeader.html(data.name);
         // set dish photo
-        if (data.photos.length) {
-            $('#dish-photo').attr('src', data.photos[0]);
-        } else {
-            $('#dish-photo').attr('src', '/static/images/noimage.jpg');
-        }
+        imagePath += data.photos.length ? data.photos[0] : 'noimage.jpg';
+        this.$dishPhoto.attr('src', imagePath);
         // set dish ingredients
         text = '';
         for (i in data.ingredients) {
@@ -103,7 +111,7 @@ function DishPresenter() {
                 text += '<li>' + name + ' - ' + quantity + ' ' + unit + '</li>\n';
             }
         }
-        $('#dish-ingredients').html(text);
+        this.$dishIngredients.html(text);
         // set dish recipe
         text = '';
         sectionCount = data.reciepe.length;
@@ -124,7 +132,13 @@ function DishPresenter() {
                 text += '</ol>';
             }
         }
-        $('#dish-recipe').html(text);
+        if (sectionCount > 0) {
+            this.$dishRecipe.html(text);
+            this.$dishRecipeSection.show();
+        } else {
+            this.$dishRecipe.html('');
+            this.$dishRecipeSection.hide();
+        }
         // set dish keywords
         text = '';
         for (i in data.keywords) {
@@ -135,12 +149,12 @@ function DishPresenter() {
                 }
             }
         }
-        $('#dish-keywords').html(text);
-        $.mobile.changePage($('#dish-page'));
+        this.$dishKeywords.html(text);
+        $.mobile.changePage(this.$dishPage);
     };
     
     this.removeDishData = function () {
-        var password = $('#remove-dish-password').val();
+        var password = this.$removeDishPassword.val();
         this.requestDishRemove(this.currentDishId, password);
     };
 
@@ -157,7 +171,7 @@ function DishPresenter() {
     };
 
     this.goToHomeScreen = function () {
-        $.mobile.changePage("#meal-selection-page");
+        $.mobile.changePage(this.$mealSelectionPage);
     };
 }
 

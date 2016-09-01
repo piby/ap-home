@@ -19,7 +19,7 @@ password = "1point0"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': 'v2016.08.01',
+        'version': '2016.09.02',
     }
     return HttpResponse(template.render(context, request))
 
@@ -52,7 +52,7 @@ def getDishData(request):
     data = {
         'name': dish.name,
         'meal': dish.type,
-        'photos': [p.filename for p in photos],
+        'photos': [p['file_name'] for p in photos],
         'ingredients': list(ingredients),
         'reciepe': json.loads(dish.recipe),
         'categories': [c.category for c in categories],

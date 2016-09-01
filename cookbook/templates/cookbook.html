@@ -30,7 +30,7 @@
     <a href="#" id="add-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
   </div>
   <div data-role="header">
-    <h1>CookBook {{ version }}</h1>
+    <h1>CookBook</h1>
   </div>
   <div data-role="main" class="ui-content">
     <a href="#" class="ui-btn ui-meal-button ui-icon-breakfast"></a>
@@ -39,7 +39,7 @@
     <a href="#" class="ui-btn ui-meal-button ui-icon-desert"></a>
   </div>
   <div data-role="footer">
-    <h1>by pbyszewski</h1>
+    <h1>Copyright © {{ version }} Piotr Byszewski</h1>
   </div>
 </div> 
 
@@ -47,7 +47,7 @@
 <div data-role="page" id="dish-properties-page">
   <div data-role="header">
     <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
-    <h1>CookBook {{ version }}</h1>
+    <h1>CookBook</h1>
   </div>
 
   <div data-role="main" class="ui-content">
@@ -176,21 +176,21 @@
   </div>
 
   <div data-role="footer">
-    <h1>Edit meal</h1>
+    <h1>Edycja dania</h1>
   </div>
 </div>
 
 <div data-role="page" id="dish-list-page">
   <div data-role="header">
     <a href="#meal-selection-page" class="ui-btn ui-corner-all ui-icon-home ui-btn-icon-left">Home</a>
-    <h1>Dishes</h1>
+    <h1>Lista dań</h1>
   </div>
   <div data-role="main" class="ui-content">
     <ul id="dish-list" data-role="listview" data-autodividers="true" data-inset="true">
     </ul>
   </div>
   <div data-role="footer">
-    <h1>Select dish</h1>
+    <h1>Wybierz danie</h1>
   </div>
 </div>
 
@@ -215,7 +215,7 @@
     <img id="dish-photo" src="" alt="">
       <h3>Składniki</h3>
       <ul id="dish-ingredients"></ul>
-      <h3>Przepis</h3>
+      <h3 id="dish-recipe-section">Przepis</h3>
       <div id="dish-recipe"></div>
       <!--
       <h3>Kategorie</h3>
