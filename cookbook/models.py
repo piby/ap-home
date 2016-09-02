@@ -5,20 +5,22 @@ class IngredientUnit(models.Model):
     fraction_form = models.CharField(max_length=50)
     few_form = models.CharField(max_length=50)
     many_form = models.CharField(max_length=50)
-
-# nabial/tluszcze, slodycze, warzywa, owoce, przetwory mleczne,
-# produkty miesne, ryby, napoje, pieczywo, konserwy, makaron/ryz/kasza,
-# produkty sypkie, sosy, mrozonki, dania gotowe, inne
-# https://www.tesco.pl/marki-i-uslugi/produkty-tesco/artykuly-spozywcze
+    def __str__(self):   
+        return self.base_form
+    
 class IngredientType(models.Model):
-    name = models.CharField(max_length=50)
-
+    name = models.CharField(max_length=50)    
+    def __str__(self):   
+        return self.name
+    
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
     category_type = models.ForeignKey(IngredientType)
     default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
     default_unit = models.ForeignKey(IngredientUnit)
-
+    def __str__(self):   
+        return self.name
+    
 class Dish(models.Model):
     MEAL_TYPES = (
         ('0', 'Breakfast'),
@@ -30,22 +32,30 @@ class Dish(models.Model):
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
     recipe = models.CharField(max_length=4000)
     last_done_date = models.DateField()
+    def __str__(self):   
+        return self.name
 
 class DishPhoto(models.Model):
     dish = models.ForeignKey(Dish)
     file_name = models.CharField(max_length=200)
     sequential_number = models.CharField(max_length=1)
-
+    def __str__(self):   
+        return self.file_name
+    
 class DishIngredient(models.Model):
     dish = models.ForeignKey(Dish)
     ingredient = models.ForeignKey(Ingredient)
     quantity = models.DecimalField(max_digits=5, decimal_places=2)
     unit = models.ForeignKey(IngredientUnit)
     sequential_number = models.CharField(max_length=1)
-
+    def __str__(self):
+        return self.ingredient.name
+    
 class Category(models.Model):
     name = models.CharField(max_length=50)
-
+    def __str__(self):   
+        return self.name
+    
 class DishCategory(models.Model):
     dish = models.ForeignKey(Dish)
     category = models.ForeignKey(Category)
