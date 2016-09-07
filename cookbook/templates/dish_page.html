@@ -1,0 +1,33 @@
+
+<div data-role="page" id="dish-page">
+  <div data-role="panel" id="dish-panel" data-display="reveal" data-position="left" data-theme="a">
+    <a href="#" id="add-dish-to-plan-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Dodaj do planu</a>
+    <a href="#" id="edit-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Edytuj</a>
+    <a href="#" id="remove-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Usuń</a>
+  </div>
+  <div data-role="popup" id="remove-dish-popup" data-theme="a" class="ui-corner-all">
+    <form style="padding:10px 20px;">
+      <h3>Usuniecie dania</h3>
+      <input id="remove-dish-password" placeholder="Haslo" value="" type="password">
+      <a href="#" id="remove-dish" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+    </form>
+  </div>
+  <div data-role="header">
+    <a href="#dish-list-page" class="ui-btn ui-corner-all ui-icon-bars ui-btn-icon-left">Lista dań</a>
+    <h1>Dish name</h1>
+  </div>
+  <div data-role="main" class="ui-content">
+    <img id="dish-photo" src="" alt="">
+      <h3>Składniki</h3>
+      <ul id="dish-ingredients"></ul>
+      <h3 id="dish-recipe-section">Przepis</h3>
+      <div id="dish-recipe"></div>
+      <!--
+      <h3>Kategorie</h3>
+      -->
+      <p id="dish-categories"></p>
+  </div>
+  <div data-role="footer">
+    <h1></h1>
+  </div>
+</div>

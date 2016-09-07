@@ -4,6 +4,9 @@
 function GeneralProperties() {
     "use strict";
 
+    this.$dishName = $('#dish-name');
+    this.$dishPassword = $('#new-dish-password');
+
     this.initialize = function () {
         $('dish-image-path').textinput();
     };
@@ -11,10 +14,10 @@ function GeneralProperties() {
     this.getContent = function () {
         var edited = true,
             id = 0,
-            name = $('#dish-name').val(),
+            name = this.$dishName.val(),
             type = 0,
             photo = '',
-            password = $('#new-dish-password').val(),
+            password = this.$dishPassword.val(),
             typeInput = $('#dish-type input[type="radio"]'),
             i = 0;
         // check which type option is checked
@@ -37,7 +40,7 @@ function GeneralProperties() {
 
     this.setContent = function (object) {
         var typeInput = $('#dish-type input');
-        $('#dish-name').val(object.name);
+        this.$dishName.val(object.name);
         typeInput[object.type].attr('checked', 'checked');
         // todo
     };
@@ -50,6 +53,18 @@ function IngredientProperties() {
 
 	this.ingredientsData = undefined;
 	this.unitsData = undefined;
+
+    this.$allIngredientsList = $('#all-ingredients-list');
+    this.$ingredinetsTable = $('#ingredinets-table');
+    this.$availableIngredients = $('#available-ingredients');
+    this.$editIngredientQuantity = $('#edit-ingredient-quantity');
+    this.$editIngredientUnit = $('#edit-ingredient-unit');
+    this.$editIngredientPopup = $('#edit-ingredient-popup');
+    this.$addIngredientName = $('#add-ingredient-name');
+    this.$addIngredientType = $('#add-ingredient-type');
+    this.$addIngredientQuantity = $('#add-ingredient-quantity');
+    this.$addIngredientUnit = $('#add-ingredient-unit');
+    this.$addIngredientPopup = $('#add-ingredient-popup');
 
     /// Initialize attributes and setup event handlers.
     this.initialize = function (ingredientsData, ingredientTypesData, unitsData) {
@@ -88,7 +103,7 @@ function IngredientProperties() {
     };
 
     this.clearIngredientList = function () {
-        $('#all-ingredients-list').empty();
+        this.$allIngredientsList.empty();
     };
 
     /// Add ingredient to the recipe.
@@ -121,7 +136,7 @@ function IngredientProperties() {
                     buttonTemplate.f('', 'ui-icon-delete') +
                  '</td>' +
                '</tr>';
-        $('#ingredinets-table').append(text);
+        this.$ingredinetsTable.append(text);
         // move ingredient up
         $('#ingredinets-table tr:last td:last a:first').on('tap', function (event) {
             var index = $(this).parent().parent().index() + 1;
@@ -141,7 +156,7 @@ function IngredientProperties() {
         $('#ingredinets-table tr:last td:last a:last').on('tap', function (event) {
             self.removeIngredient($(this).parent().parent().index() + 1);
         });
-        $('#available-ingredients').val('');
+        this.$availableIngredients.val('');
         $('#all-ingredients-list a').addClass('ui-screen-hidden');
     };
 
@@ -181,24 +196,28 @@ function IngredientProperties() {
 
     /// Show popup that enables posibility to edit ingredient unit.
     this.showEditIngredientPopup = function (index) {
-        this.constructSelectmenu('#edit-ingredient-unit', this.unitsData);
-        // clear form content
-        $('#edit-ingredient-quantity').val(1);
-        $('#edit-ingredient-unit-input').val("");
-        $('#edit-ingredient-popup').attr('data-index', index).popup('open');
+        var previousUnit,
+            ingredientDefinition = $('#ingredinets-table tr:nth-child(' + index + ') td'),
+            quantity = ingredientDefinition.eq(1).text(),
+            unit = ingredientDefinition.eq(2).text();
+        unit = this.unitsData.getBaseForm(unit);
+        unit = this.unitsData.index(unit);
+        unit = this.unitsData.getId(unit);
+        this.constructSelectmenu(this.$editIngredientUnit, this.unitsData);
+        this.$editIngredientQuantity.val(quantity);
+        this.$editIngredientUnit.val(unit);
+        this.$editIngredientUnit.selectmenu('refresh');
+        this.$editIngredientPopup.attr('data-index', index).popup('open');
     };
 
-    this.constructSelectmenu = function (listTagId, listData) {
+    this.constructSelectmenu = function (listTag, listData) {
         var allOptionsText = '',
-            listTag = $(listTagId),
-            selectionText = ' selected="selected"',
             i;
         // Construct lists containing all available units.
         if (listTag.children().length === 0) {
             for (i = 0; i < listData.count(); i += 1) {
-                allOptionsText += '<option value="' + listData.getId(i) + '"' + selectionText + '>' +
+                allOptionsText += '<option value="' + listData.getId(i) + '">' +
                                   listData.getName(i) + '</option>';
-                selectionText = '';
             }
             listTag.html(allOptionsText);
             listTag.selectmenu().selectmenu('refresh');
@@ -207,28 +226,28 @@ function IngredientProperties() {
 
     /// Show popup that can be used to define new ingredient.
     this.showAddIngredientPopup = function () {
-        this.constructSelectmenu('#add-ingredient-type', this.ingredientTypesData);
-        this.constructSelectmenu('#add-ingredient-unit', this.unitsData);
+        this.constructSelectmenu(this.$addIngredientType, this.ingredientTypesData);
+        this.constructSelectmenu(this.$addIngredientUnit, this.unitsData);
         // clear form content
-        $('#add-ingredient-name').val("");
-        $('#add-ingredient-quantity').val(1);
-        $('#add-ingredient-popup').popup('open');
+        this.$addIngredientName.val("");
+        this.$addIngredientQuantity.val(1);
+        this.$addIngredientPopup.popup('open');
     };
 
     /// Callback used when new ingredient was defined.
     this.addNewIngredientDefinition = function () {
         var i,
             ingredient,
-            name = $('#add-ingredient-name').val(),
-            type = parseInt($('#add-ingredient-type').val(), 10),
-            defaultQuantity = parseFloat($('#add-ingredient-quantity').val()),
-            defaultUnit = parseInt($('#add-ingredient-unit').val(), 10);
+            name = this.$addIngredientName.val(),
+            type = parseInt(this.$addIngredientType.val(), 10),
+            defaultQuantity = parseFloat(this.$addIngredientQuantity.val()),
+            defaultUnit = parseInt(this.$addIngredientUnit.val(), 10);
         // validate data
         if (isNaN(defaultQuantity) || (defaultQuantity === undefined)) {
             return;
         }
         // close dialog
-        $('#add-ingredient-popup').popup('close');
+        this.$addIngredientPopup.popup('close');
         // check if ingrediant exists
         for (i = 0; i < this.ingredientsData.count(); i += 1) {
             ingredient = this.ingredientsData.get(i);
@@ -250,10 +269,9 @@ function IngredientProperties() {
 	};
 
     this.editIngredient = function () {
-        var editIngredientPopup = $('#edit-ingredient-popup'),
-            index = editIngredientPopup.attr('data-index'),
-            quantity = $('#edit-ingredient-quantity').val(),
-            unit = $('#edit-ingredient-unit').val(),
+        var index = this.$editIngredientPopup.attr('data-index'),
+            quantity = this.$editIngredientQuantity.val(),
+            unit = this.$editIngredientUnit.val(),
             itemChildren;
         // validate data
         quantity = parseFloat(quantity);
@@ -266,7 +284,7 @@ function IngredientProperties() {
         unit = this.unitsData.index(unit);
         itemChildren.eq(2).text(this.unitsData.decline(unit, quantity));
         // close dialog
-        editIngredientPopup.popup('close');
+        this.$editIngredientPopup.popup('close');
     };
 
     this.getContent = function () {
