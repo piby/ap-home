@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString*/
+/*global $, jQuery, alert, cleanNameString, md5*/
 
 function GeneralProperties() {
     "use strict";
@@ -17,7 +17,7 @@ function GeneralProperties() {
             name = this.$dishName.val(),
             type = 0,
             photo = '',
-            password = this.$dishPassword.val(),
+            password = md5(this.$dishPassword.val()),
             typeInput = $('#dish-type input[type="radio"]'),
             i = 0;
         // check which type option is checked

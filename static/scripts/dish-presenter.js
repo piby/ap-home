@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString, cleanQuantity*/
+/*global $, jQuery, alert, cleanNameString, cleanQuantity, md5*/
 
 
 function DishPresenter() {
@@ -154,7 +154,7 @@ function DishPresenter() {
     };
     
     this.removeDishData = function () {
-        var password = this.$removeDishPassword.val();
+        var password = md5(this.$removeDishPassword.val());
         this.requestDishRemove(this.currentDishId, password);
     };
 

@@ -14,12 +14,12 @@ from cookbook.models import Category
 from datetime import date
 import json
 
-password = "1point0"
+password = "96ec3fa8d9749750a629fc2a7ebbc302"
 
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2016.09.02',
+        'version': '2016.09.08',
     }
     return HttpResponse(template.render(context, request))
 
