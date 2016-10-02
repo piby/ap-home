@@ -19,7 +19,7 @@ password = "96ec3fa8d9749750a629fc2a7ebbc302"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2016.09.08',
+        'version': '2016.09.24',
     }
     return HttpResponse(template.render(context, request))
 
@@ -29,7 +29,19 @@ def getDishList(request):
         .filter(type=meal_type)\
         .values('id', 'name', 'last_done_date')\
         .order_by('name')
-    return JsonResponse(list(dishes), safe=False)
+    photos = DishPhoto.objects\
+        .values('dish', 'file_name')
+    dishList = list(dishes)
+    # add image file name to every dish
+    for dish in dishList:
+        dish['image'] = ''
+        # find photo for current dish
+        for photo in photos:
+            print photo['file_name']
+            if photo['dish'] == dish['id']:
+                dish['image'] = photo['file_name']
+                break
+    return JsonResponse(dishList, safe=False)
 
 def getDishData(request):
     requested_id = request.GET['id']
@@ -49,7 +61,7 @@ def getDishData(request):
         .filter(dish=dish)\
         .values()\
         .order_by('sequential_number')
-    data = {
+    return JsonResponse({
         'name': dish.name,
         'meal': dish.type,
         'photos': [p['file_name'] for p in photos],
@@ -57,8 +69,7 @@ def getDishData(request):
         'reciepe': json.loads(dish.recipe),
         'categories': [c.category for c in categories],
         'result': 'ok'
-    }
-    return JsonResponse(data)
+    })
 
 @csrf_protect
 def addDishData(request):
@@ -141,7 +152,7 @@ def addDishData(request):
             ingredient=ingredient,
             quantity=i[1],
             unit=ingredient_unit,
-            sequential_number=order_index)
+            sequential_number=chr(order_index))
         order_index += 1
         dish_ingredient.save()
     # process new category definitions
@@ -170,7 +181,7 @@ def addDishData(request):
             dish_category = DishCategory(
                 dish=dish,
                 category=category,
-                sequential_number=order_index)
+                sequential_number=chr(order_index))
             order_index += 1
     return JsonResponse({'result': 'ok',
         'new_ingredients': new_ingredients_response,
@@ -220,5 +231,44 @@ def getComponents(request):
         'ingredients': list(all_ingredients),
         'ingredient_types': list(all_ingredient_types),
         'categories': list(all_categories)
+    }
+    return JsonResponse(data)
+
+@csrf_protect
+def backupDishesData(request):
+    if request.GET['password'] != password:
+        return JsonResponse({'result': 'invalid pssword'})
+    dishes = Dish.objects.all()
+    dishes_ingredients = DishIngredient.objects.all()
+    dishes_photos = DishPhoto.objects.all()
+    dishes_categories = DishCategory.objects.all()
+    dish_list = []
+    # create array containing all dishes
+    for dish in dishes:
+        ingredients = dishes_ingredients\
+            .filter(dish=dish)\
+            .values('unit_id', 'sequential_number', 'ingredient_id', 'quantity')\
+            .order_by('sequential_number')\
+            .values('unit_id', 'ingredient_id', 'quantity')
+        photos = dishes_photos\
+            .filter(dish=dish)\
+            .values('file_name', 'sequential_number')\
+            .order_by('sequential_number')\
+            .values('file_name')
+        categories = dishes_categories\
+            .filter(dish=dish)\
+            .values()\
+            .order_by('sequential_number')
+        dish_list.append({
+            'name': dish.name,
+            'meal': dish.type,
+            'photos': [p['file_name'] for p in photos],
+            'ingredients': list(ingredients),
+            'reciepe': json.loads(dish.recipe),
+            'categories': [c.category for c in categories],
+        })
+    data = {
+        'result': 'ok',
+        'list': dish_list
     }
     return JsonResponse(data)

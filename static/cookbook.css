@@ -24,3 +24,9 @@
 #dish-recipe h4 {
     margin-left: 10px;
 }
+
+#backup-dishes-option {
+    position: absolute;
+    bottom: 10px;
+    width: 75%;
+}

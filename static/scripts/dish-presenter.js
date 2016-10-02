@@ -18,6 +18,7 @@ function DishPresenter() {
     this.$dishRecipeSection = $('#dish-recipe-section');
     this.$dishKeywords = $('#dish-keywords');
     this.$removeDishPassword = $('#remove-dish-password');
+    this.$backupDishesPassword = $('#backup-dishes-password');
     this.$dishListPage = $('#dish-list-page');
     this.$dishPage = $('#dish-page');
     this.$mealSelectionPage = $("#meal-selection-page");
@@ -34,6 +35,7 @@ function DishPresenter() {
         $('.ui-icon-desert').on('tap', function () { self.requestDishList(3); });
 
         $('#remove-dish').on('tap', function () { self.removeDishData(); });
+        $('#backup-dishes').on('tap', function () { self.requestDishesBackup(); });
     };
 
     this.requestDishList = function (meal) {
@@ -54,7 +56,9 @@ function DishPresenter() {
             i = 0;
         for (i in data) {
             if (data.hasOwnProperty(i)) {
-                text += '<li data-id="' + data[i].id + '"><a href=\"#\">' + data[i].name + '</a></li>\n';
+                text += '<li data-id="' + data[i].id + '" data-image="' + data[i].image + '">' +
+                          '<a href=\"#\">' + data[i].name + '</a>' +
+                        '</li>\n';
             }
         }
         this.$dishList.html(text);
@@ -63,12 +67,71 @@ function DishPresenter() {
         if (this.$dishList.hasClass('ui-listview')) {
             this.$dishList.listview("refresh");
         }
-        $('#dish-list li[data-id]').on('tap', function (event) { self.requestDishData($(this).attr('data-id')); });
+        this.$dishList.find('li[data-id]').on('tap', function (event) {
+            var item = $(this),
+                id = item.attr('data-id'),
+                image = item.attr('data-image');
+            self.requestDishData(id, image);
+        });
         $.mobile.changePage($('#dish-list-page'));
     };
 
-    this.requestDishData = function (dishId) {
-        var self = this;
+    this.requestDishesBackup = function () {
+        var self = this,
+            password = md5(this.$backupDishesPassword.val());
+        $('#backup-dishes-popup').popup('close');
+        $.ajax({
+            type: "GET",
+            url: "backup-dishes",
+            data: { password: password },
+            datatype: "json",
+            error: function (data) { alert('Error'); },
+            success: function (data) { self.saveBackup(data); }
+        });
+    };
+
+    this.saveBackup = function (data) {
+        var aTag = document.createElement('a'),
+            date = new Date(),
+            day = date.getDate(),
+            month = date.getMonth() + 1,
+            year = date.getFullYear(),
+            filename = 'cookbook_',
+            dataToSerialize,
+            event;
+        if (data.result !== 'ok') {
+            return;
+        }
+        // create file name
+        filename += day + '_' + month + '_' + year + '.json';
+
+        // get the components
+        dataToSerialize = {
+            units: this.unitsData.data,
+            categories: this.categoriesData.data,
+            ingredients: this.ingredientsData.data,
+            dishes: data.list
+        };
+
+        aTag.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify(dataToSerialize));
+        aTag.setAttribute('download', filename);
+
+        if (document.createEvent) {
+            event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            aTag.dispatchEvent(event);
+        } else {
+            aTag.click();
+        }
+    };
+
+    this.requestDishData = function (dishId, dishImage) {
+        var self = this,
+            imagePath = '/static/images/dish/';
+        // download image
+        imagePath += (dishImage === '') ? 'noimage.jpg' : dishImage;
+        this.$dishPhoto.attr('src', imagePath);
+        // download data
         $.ajax({
             type: "GET",
             url: "get-dish-data",
@@ -90,14 +153,10 @@ function DishPresenter() {
             quantity,
             unit,
             i,
-            j,
-            imagePath = '/static/images/dish/';
+            j;
         this.currentDishId = dishId;
         // set dish name
         this.$dishHeader.html(data.name);
-        // set dish photo
-        imagePath += data.photos.length ? data.photos[0] : 'noimage.jpg';
-        this.$dishPhoto.attr('src', imagePath);
         // set dish ingredients
         text = '';
         for (i in data.ingredients) {

@@ -48,6 +48,9 @@
         $('#remove-dish-option').on('tap', function() {
             $('#remove-dish-popup').popup('open');
         });
+        $('#backup-dishes-option').on('tap', function() {
+            $('#backup-dishes-popup').popup('open');
+        });
 
         // get from server all dish ingreadiens, units and categories
         globals.requestComponents();

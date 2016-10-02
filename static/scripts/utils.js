@@ -37,6 +37,7 @@ function cleanNameString(string) {
 }
 
 function cleanQuantity(value) {
+    "use strict";
     if ($.type(value) === "string") {
         value = parseFloat(value);
     }

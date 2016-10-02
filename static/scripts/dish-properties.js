@@ -6,6 +6,7 @@ function GeneralProperties() {
 
     this.$dishName = $('#dish-name');
     this.$dishPassword = $('#new-dish-password');
+    this.$dishType = $('#dish-type');
 
     this.initialize = function () {
         $('dish-image-path').textinput();
@@ -18,7 +19,7 @@ function GeneralProperties() {
             type = 0,
             photo = '',
             password = md5(this.$dishPassword.val()),
-            typeInput = $('#dish-type input[type="radio"]'),
+            typeInput = this.$dishType.find('input[type="radio"]'),
             i = 0;
         // check which type option is checked
         for (i = 0; i < typeInput.length; i += 1) {
@@ -39,7 +40,7 @@ function GeneralProperties() {
     };
 
     this.setContent = function (object) {
-        var typeInput = $('#dish-type input');
+        var typeInput = this.$dishType.find('input');
         this.$dishName.val(object.name);
         typeInput[object.type].attr('checked', 'checked');
         // todo
@@ -82,8 +83,7 @@ function IngredientProperties() {
     this.synchronizeIngredientList = function () {
         var self = this,
             classText = 'class="ui-btn ui-corner-all ui-shadow ui-screen-hidden"',
-            ingredientsList = $('#all-ingredients-list'),
-            itemsInHtml = ingredientsList.children().length,
+            itemsInHtml = this.$allIngredientsList.children().length,
             itemsInScript = this.ingredientsData.count(),
             ingredientsText = '',
             selectorString = '#all-ingredients-list a',
@@ -95,7 +95,7 @@ function IngredientProperties() {
         for (i = itemsInHtml; i < itemsInScript; i += 1) {
             ingredientsText += '<a href="#" ' + classText + '>' + this.ingredientsData.getName(i) + "</a>\n";
         }
-        ingredientsList.append(ingredientsText);
+        this.$allIngredientsList.append(ingredientsText);
         if (itemsInHtml > 0) {
             selectorString += (':gt(' + (itemsInHtml - 1) + ')');
         }
@@ -138,33 +138,33 @@ function IngredientProperties() {
                '</tr>';
         this.$ingredinetsTable.append(text);
         // move ingredient up
-        $('#ingredinets-table tr:last td:last a:first').on('tap', function (event) {
+        this.$ingredinetsTable.find('tr:last td:last a:first').on('tap', function (event) {
             var index = $(this).parent().parent().index() + 1;
             self.swapIngredients(index, index - 1);
         });
         // move ingredient down
-        $('#ingredinets-table tr:last td:last a:nth-child(2)').on('tap', function (event) {
+        this.$ingredinetsTable.find('tr:last td:last a:nth-child(2)').on('tap', function (event) {
             var index = $(this).parent().parent().index() + 1;
             self.swapIngredients(index, index + 1);
         });
         // edit ingredient
-        $('#ingredinets-table tr:last td:last a:nth-child(3)').on('tap', function (event) {
+        this.$ingredinetsTable.find('tr:last td:last a:nth-child(3)').on('tap', function (event) {
             var index = $(this).parent().parent().index() + 1;
             self.showEditIngredientPopup(index);
         });
         // delete ingredient
-        $('#ingredinets-table tr:last td:last a:last').on('tap', function (event) {
+        this.$ingredinetsTable.find('tr:last td:last a:last').on('tap', function (event) {
             self.removeIngredient($(this).parent().parent().index() + 1);
         });
         this.$availableIngredients.val('');
-        $('#all-ingredients-list a').addClass('ui-screen-hidden');
+        this.$allIngredientsList.find('a').addClass('ui-screen-hidden');
     };
 
     /// Swap places of two added ingredients.
     this.swapIngredients = function (firstIndex, secondIndex) {
         var firstItemChildren,
             secondItemChildren,
-            ingredinetsCount = $('#ingredinets-table tr').length,
+            ingredinetsCount = this.$ingredinetsTable.find('tr').length,
             name,
             quantity,
             unit;
@@ -175,8 +175,8 @@ function IngredientProperties() {
             return;
         }
 
-        firstItemChildren = $('#ingredinets-table tr:nth-child(' + firstIndex + ') td');
-        secondItemChildren = $('#ingredinets-table tr:nth-child(' + secondIndex + ') td');
+        firstItemChildren = this.$ingredinetsTable.find('tr:nth-child(' + firstIndex + ') td');
+        secondItemChildren = this.$ingredinetsTable.find('tr:nth-child(' + secondIndex + ') td');
 
         name = firstItemChildren.eq(0).text();
         quantity = firstItemChildren.eq(1).text();
@@ -191,13 +191,13 @@ function IngredientProperties() {
 
     /// Remove ingredient that was added to recipe.
     this.removeIngredient = function (index) {
-        $('#ingredinets-table tr:nth-child(' + index + ')').remove();
+        this.$ingredinetsTable.find('tr:nth-child(' + index + ')').remove();
     };
 
     /// Show popup that enables posibility to edit ingredient unit.
     this.showEditIngredientPopup = function (index) {
         var previousUnit,
-            ingredientDefinition = $('#ingredinets-table tr:nth-child(' + index + ') td'),
+            ingredientDefinition = this.$ingredinetsTable.find('tr:nth-child(' + index + ') td'),
             quantity = ingredientDefinition.eq(1).text(),
             unit = ingredientDefinition.eq(2).text();
         unit = this.unitsData.getBaseForm(unit);
@@ -279,7 +279,7 @@ function IngredientProperties() {
             return;
         }
         // apply changes
-        itemChildren = $('#ingredinets-table tr:nth-child(' + index + ') td');
+        itemChildren = this.$ingredinetsTable.find('tr:nth-child(' + index + ') td');
         itemChildren.eq(1).text(quantity);
         unit = this.unitsData.index(unit);
         itemChildren.eq(2).text(this.unitsData.decline(unit, quantity));
@@ -294,7 +294,7 @@ function IngredientProperties() {
             addedIngredientsData = [],
             dishIngredinetsArray = [],
             ingredientData,
-            dishIngredinetsHtml = $('#ingredinets-table tr'),
+            dishIngredinetsHtml = this.$ingredinetsTable.find('tr'),
             unit;
         // get all newly added (in this sesion) ingredients definitions
         for (i = 0; i < this.ingredientsData.count(); i += 1) {
@@ -335,33 +335,36 @@ function RecipeProperties() {
 
     /// Class encapsulating all operations related to dish recipe.
 
-    this.recipeSections = undefined;
+    this.$recipeSections = $('#recipe-sections');
+    this.$recipeItemOptions = $('#recipe-item-options');
+    this.$editRecipePointTextPopup = $('#edit-recipe-point-text-popup');
+    this.$editRecipeSectionNamePopup = $('#edit-recipe-section-name-popup');
+    this.$newRecipeSectionName = $('#new-recipe-section-name');
 
     this.initialize = function () {
-        var self = this;
-        this.recipeSections = $('#recipe-sections');
+        var self = this,
+            recipeItemOptions = this.$recipeItemOptions;
         // assign hadler to popup that lets to add new section
         $('#add-recipe-section').on('tap', function (event) { self.addNewRecipeSection(); });
         // assign handler to popup that lets to edit section name
-        $('#edit-recipe-section-name-popup a').on('tap', function (event) { self.applyEditSectionName(); });
+        this.$editRecipeSectionNamePopup.find('a').on('tap', function (event) { self.applyEditSectionName(); });
         // assign handlers to popup that lets to operate on section points
-        $('#recipe-item-options .move-point-up').on('tap', function (event) { self.movePointUp(); });
-        $('#recipe-item-options .move-point-down').on('tap', function (event) { self.movePointDown(); });
-        $('#recipe-item-options .edit-point').on('tap', function (event) { self.showEditPointTextPopup(); });
-        $('#recipe-item-options .delete-point').on('tap', function (event) { self.deletePoint(); });
+        recipeItemOptions.find('.move-point-up').on('tap', function (event) { self.movePointUp(); });
+        recipeItemOptions.find('.move-point-down').on('tap', function (event) { self.movePointDown(); });
+        recipeItemOptions.find('.edit-point').on('tap', function (event) { self.showEditPointTextPopup(); });
+        recipeItemOptions.find('.delete-point').on('tap', function (event) { self.deletePoint(); });
         // assign handler to popup that lets to edit point text
-	    $('#edit-recipe-point-text-popup a').on('tap', function (event) { self.applyEditedPointText(); });
+	    this.$editRecipePointTextPopup.find('a').on('tap', function (event) { self.applyEditedPointText(); });
     };
 
     /// Add new recipe section.
     this.addNewRecipeSection = function () {
         var self = this,
-            newSectionName = $('#new-recipe-section-name'),
             text = '',
             buttonClasses = 'ui-btn ui-btn-icon-notext ui-corner-all ui-btn-inline ';
         text = '<div>' +
                  '<div class="ui-bar ui-bar-a">' +
-                   '<h4 style="margin-top: 5px;">' + newSectionName.val() + '</h4>' +
+                   '<h4 style="margin-top: 5px;">' + this.$newRecipeSectionName.val() + '</h4>' +
                    '<div style="height: 28px; float: right;">' +
                      '<a href="#" class="' + buttonClasses + 'ui-icon-arrow-u" style="margin-top:0px;"></a>' +
                      '<a href="#" class="' + buttonClasses + 'ui-icon-arrow-d" style="margin-top:0px;"></a>' +
@@ -378,13 +381,13 @@ function RecipeProperties() {
                    '<button class="ui-btn ui-icon-plus ui-btn-icon-left ui-shadow ui-corner-all ui-mini" type="button">Dodaj punkt</button>' +
                  '</div>' +
                '</div>';
-        this.recipeSections.append(text);
+        this.$recipeSections.append(text);
         $('#recipe-sections > div:last .ui-icon-arrow-u').on('tap', function (event) { self.moveSectionUp($(this).parent().parent().parent()); });
         $('#recipe-sections > div:last .ui-icon-arrow-d').on('tap', function (event) { self.moveSectionDown($(this).parent().parent().parent()); });
         $('#recipe-sections > div:last .ui-icon-gear').on('tap', function (event) { self.showEditSectionPopup($(this).parent().parent().parent()); });
         $('#recipe-sections > div:last .ui-icon-delete').on('tap', function (event) { $(this).parent().parent().parent().remove(); });
         $('#recipe-sections > div:last button').on('tap', function (event) { self.addNewPoint($(this).parent()); });
-        newSectionName.val('');
+        this.$newRecipeSectionName.val('');
     };
 
     /// Move section up.
@@ -407,7 +410,7 @@ function RecipeProperties() {
             firstPointList,
             secondPointList,
             firstPointListHtml,
-            sectionsCount = this.recipeSections.children().length;
+            sectionsCount = this.$recipeSections.children().length;
 
         firstIndex = (firstIndex < 1) ? sectionsCount : ((firstIndex > sectionsCount) ? 1 : firstIndex);
         secondIndex = (secondIndex < 1) ? sectionsCount : ((secondIndex > sectionsCount) ? 1 : secondIndex);
@@ -432,19 +435,17 @@ function RecipeProperties() {
 
     /// Show popup that can be used to edit section name.
     this.showEditSectionPopup = function (item) {
-        var editPopup = $('#edit-recipe-section-name-popup');
-        $('#edit-recipe-section-name-popup input').val("");
-        editPopup.attr('data-index', item.index() + 1);
-        editPopup.popup('open');
+        this.$editRecipeSectionNamePopup.find('input').val("");
+        this.$editRecipeSectionNamePopup.attr('data-index', item.index() + 1);
+        this.$editRecipeSectionNamePopup.popup('open');
     };
 
     /// Apply text entered to popup that defines new section name.
     this.applyEditSectionName = function () {
-        var newName = $('#edit-recipe-section-name-popup input').val(),
-            editPopup = $('#edit-recipe-section-name-popup'),
-            index = parseInt(editPopup.attr('data-index'), 10);
+        var newName = this.$editRecipeSectionNamePopup.find('input').val(),
+            index = parseInt(this.$editRecipeSectionNamePopup.attr('data-index'), 10);
         $('#recipe-sections > div:nth-child(' + index + ') h4').text(newName);
-        editPopup.popup('close');
+        this.$editRecipeSectionNamePopup.popup('close');
     };
 
     /// Add new point to recipe.
@@ -476,10 +477,10 @@ function RecipeProperties() {
 
     /// Show popup that can be used to edit section point (recipe preparation step) properties.
     this.showEditSectionPointPopup = function (item, popupX, popupY) {
-        var optionsPopup = $('#recipe-item-options');
-        optionsPopup.attr('data-section-index', item.parent().parent().parent().index() + 1);
-        optionsPopup.attr('data-point-index', item.index() + 1);
-        optionsPopup.popup('open', {
+        var recipeItemOptions = this.$recipeItemOptions;
+        recipeItemOptions.attr('data-section-index', item.parent().parent().parent().index() + 1);
+        recipeItemOptions.attr('data-point-index', item.index() + 1);
+        recipeItemOptions.popup('open', {
             x: popupX,
             y: popupY
         });
@@ -487,22 +488,21 @@ function RecipeProperties() {
 
     /// Move point up.
     this.movePointUp = function () {
-        var optionsPopup = $('#recipe-item-options'),
-            sectionIndex = parseInt(optionsPopup.attr('data-section-index'), 10),
-            pointIndex = parseInt(optionsPopup.attr('data-point-index'), 10),
+        var recipeItemOptions = this.$recipeItemOptions,
+            sectionIndex = parseInt(recipeItemOptions.attr('data-section-index'), 10),
+            pointIndex = parseInt(recipeItemOptions.attr('data-point-index'), 10),
             pointList = $('#recipe-sections > div:nth-child(' + sectionIndex + ') li');
 	    this.swapSectionPoints(pointList, pointIndex, pointIndex - 1);
-	    optionsPopup.popup('close');
+	    recipeItemOptions.popup('close');
     };
 
     /// Move point down.
     this.movePointDown = function () {
-        var optionsPopup = $('#recipe-item-options'),
-            sectionIndex = parseInt(optionsPopup.attr('data-section-index'), 10),
-            pointIndex = parseInt(optionsPopup.attr('data-point-index'), 10),
+        var sectionIndex = parseInt(this.$recipeItemOptions.attr('data-section-index'), 10),
+            pointIndex = parseInt(this.$recipeItemOptions.attr('data-point-index'), 10),
             pointList = $('#recipe-sections > div:nth-child(' + sectionIndex + ') li');
 	    this.swapSectionPoints(pointList, pointIndex, pointIndex + 1);
-	    optionsPopup.popup('close');
+	    this.$recipeItemOptions.popup('close');
     };
 
     /// Swap points in single section.
@@ -533,18 +533,17 @@ function RecipeProperties() {
 
 	/// Show popup that enebles possibility to edit point text.
     this.showEditPointTextPopup = function () {
-	    var optionsPopup = $('#recipe-item-options'),
-            sectionIndex = parseInt(optionsPopup.attr('data-section-index'), 10),
-            pointIndex = parseInt(optionsPopup.attr('data-point-index'), 10),
+	    var sectionIndex = parseInt(this.$recipeItemOptions.attr('data-section-index'), 10),
+            pointIndex = parseInt(this.$recipeItemOptions.attr('data-point-index'), 10),
             previousText = this.getSectionPoint(sectionIndex, pointIndex).text(),
-	        editPopup = $('#edit-recipe-point-text-popup');
+	        editPopup = this.$editRecipePointTextPopup;
 	    // close options popup
-	    optionsPopup.popup('close');
+	    this.$recipeItemOptions.popup('close');
 	    // set the section and point index in edit popup
         editPopup.attr('data-section-index', sectionIndex);
         editPopup.attr('data-point-index', pointIndex);
         // set the previous text to input box so that it can be edited
-        $('#edit-recipe-point-text-popup input').val(previousText);
+        editPopup.find('input').val(previousText);
         // show popup in which we can edit point text - this popup is
         // delayed because in jquery mobile popups can't be chained, its
         // possible that in some case delay may be to small - in that case
@@ -556,10 +555,10 @@ function RecipeProperties() {
 
 	/// Apply edited point text.
     this.applyEditedPointText = function () {
-	    var editPopup = $('#edit-recipe-point-text-popup'),
+	    var editPopup = this.$editRecipePointTextPopup,
             sectionIndex = parseInt(editPopup.attr('data-section-index'), 10),
             pointIndex = parseInt(editPopup.attr('data-point-index'), 10),
-            newPointText = $('#edit-recipe-point-text-popup input').val();
+            newPointText = editPopup.find('input').val();
         this.getSectionPoint(sectionIndex, pointIndex).text(newPointText);
 	    editPopup.popup('close');
     };
@@ -579,8 +578,8 @@ function RecipeProperties() {
             j = 0,
             sectionPoints = [],
             sectionObjects = [],
-            allSectionNamesHtml = $('#recipe-sections h4'),
-            allSectionPointsHtml = $('#recipe-sections ol'),
+            allSectionNamesHtml = this.$recipeSections.find('h4'),
+            allSectionPointsHtml = this.$recipeSections.find('ol'),
             sectionPointsHtml;
         // make sure that there is as much titles as section point lists
         if (allSectionNamesHtml.length !== allSectionPointsHtml.length) {
@@ -610,6 +609,11 @@ function CategoryProperties() {
 
 	this.categoriesData = undefined;
 
+    this.$categoriesList = $('#all-categories-list');
+    this.$availableCategories = $('#available-categories');
+    this.$newCategory = $('#new-category');
+    this.$addCategoryPopup = $('#add-category-popup');
+
 	this.initialize = function (categoriesData) {
         var self = this;
 		this.categoriesData = categoriesData;
@@ -621,11 +625,10 @@ function CategoryProperties() {
     this.synchronizeCategoriesList = function () {
         var self = this,
             classText = 'class="ui-btn ui-corner-all ui-shadow ui-screen-hidden"',
-            categoriesList = $('#all-categories-list'),
-            itemsInHtml = categoriesList.children().length,
+            itemsInHtml = this.$categoriesList.children().length,
             itemsInScript = this.categoriesData.count(),
             categoriesText = '',
-            selectorString = '#all-categories-list a',
+            selectorString = 'a',
             i;
         // if there is same number of items in html as in javascript array then there is nothing to do
         if (itemsInHtml === itemsInScript) {
@@ -634,17 +637,17 @@ function CategoryProperties() {
         for (i = itemsInHtml; i < itemsInScript; i += 1) {
             categoriesText += '<a href="#" ' + classText + '>' + this.categoriesData.get(i) + "</a>";
         }
-        categoriesList.append(categoriesText);
+        this.$categoriesList.append(categoriesText);
         // if there already were items added then only add 'on tap' handler
         // to those who have been added during this synchronizations
         if (itemsInHtml > 0) {
             selectorString += (':gt(' + (itemsInHtml - 1) + ')');
         }
-        $(selectorString).on('tap', function (event) { self.addCategory($(this).text()); });
+        this.$categoriesList.find(selectorString).on('tap', function (event) { self.addCategory($(this).text()); });
     };
 
     this.clearCategoriesList = function () {
-        $('#all-categories-list').empty();
+        this.$categoriesList.empty();
     };
 
     /// Add keyword to the keyword list.
@@ -654,7 +657,7 @@ function CategoryProperties() {
                       cleanNameString(name) +
                    '</a>',
             categoryShouldBeAdded = true,
-            allCategories = $('#categories-list a'),
+            allCategories = this.$categoriesList.find('a'),
             i = 0;
         // check if this category is not already present
         for (i = 0; i < allCategories.length; i += 1) {
@@ -664,27 +667,27 @@ function CategoryProperties() {
             }
         }
         if (categoryShouldBeAdded) {
-            $('#categories-list').append(text);
-            $('#categories-list a:last').on('tap', function (event) { self.deleteCategory($(this).index() + 1); });
+            this.$categoriesList.append(text);
+            this.$categoriesList.find('a:last').on('tap', function (event) { self.deleteCategory($(this).index() + 1); });
         }
-	    $('#available-categories').val('');
-	    $('#all-categories-list a').addClass('ui-screen-hidden');
+	    this.$availableCategories.val('');
+	    this.$categoriesList.find('a').addClass('ui-screen-hidden');
     };
 
     /// Delete category from the categories list.
     this.deleteCategory = function (index) {
-	    $('#categories-list a:nth-child(' + index + ')').remove();
+	    this.$categoriesList.find('a:nth-child(' + index + ')').remove();
     };
 
     /// Show popup that can be used to define new category.
     this.showAddCategoryPopup = function () {
-        $('#new-category').val("");
-        $('#add-category-popup').popup('open');
+        this.$newCategory.val("");
+        this.$addCategoryPopup.popup('open');
     };
 
     /// Callback used when new category was defined.
     this.addNewCategoryDefinition = function () {
-        var name = $('#new-category').val(),
+        var name = this.$newCategory.val(),
             i = 0;
         // check if category already exists
         for (i = 0; i < this.categoriesData.count(); i += 1) {
@@ -696,7 +699,7 @@ function CategoryProperties() {
         this.categoriesData.add(-1, name, 'add');
         // update list of categories
         this.synchronizeCategoriesList();
-        $('#add-category-popup').popup('close');
+        this.$addCategoryPopup.popup('close');
 	};
 
     this.getContent = function () {
