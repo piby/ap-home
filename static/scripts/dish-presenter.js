@@ -18,7 +18,6 @@ function DishPresenter() {
     this.$dishRecipeSection = $('#dish-recipe-section');
     this.$dishKeywords = $('#dish-keywords');
     this.$removeDishPassword = $('#remove-dish-password');
-    this.$backupDishesPassword = $('#backup-dishes-password');
     this.$dishListPage = $('#dish-list-page');
     this.$dishPage = $('#dish-page');
     this.$mealSelectionPage = $("#meal-selection-page");
@@ -35,7 +34,6 @@ function DishPresenter() {
         $('.ui-icon-desert').on('tap', function () { self.requestDishList(3); });
 
         $('#remove-dish').on('tap', function () { self.removeDishData(); });
-        $('#backup-dishes').on('tap', function () { self.requestDishesBackup(); });
     };
 
     this.requestDishList = function (meal) {
@@ -74,55 +72,6 @@ function DishPresenter() {
             self.requestDishData(id, image);
         });
         $.mobile.changePage($('#dish-list-page'));
-    };
-
-    this.requestDishesBackup = function () {
-        var self = this,
-            password = md5(this.$backupDishesPassword.val());
-        $('#backup-dishes-popup').popup('close');
-        $.ajax({
-            type: "GET",
-            url: "backup-dishes",
-            data: { password: password },
-            datatype: "json",
-            error: function (data) { alert('Error'); },
-            success: function (data) { self.saveBackup(data); }
-        });
-    };
-
-    this.saveBackup = function (data) {
-        var aTag = document.createElement('a'),
-            date = new Date(),
-            day = date.getDate(),
-            month = date.getMonth() + 1,
-            year = date.getFullYear(),
-            filename = 'cookbook_',
-            dataToSerialize,
-            event;
-        if (data.result !== 'ok') {
-            return;
-        }
-        // create file name
-        filename += day + '_' + month + '_' + year + '.json';
-
-        // get the components
-        dataToSerialize = {
-            units: this.unitsData.data,
-            categories: this.categoriesData.data,
-            ingredients: this.ingredientsData.data,
-            dishes: data.list
-        };
-
-        aTag.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify(dataToSerialize));
-        aTag.setAttribute('download', filename);
-
-        if (document.createEvent) {
-            event = document.createEvent('MouseEvents');
-            event.initEvent('click', true, true);
-            aTag.dispatchEvent(event);
-        } else {
-            aTag.click();
-        }
     };
 
     this.requestDishData = function (dishId, dishImage) {

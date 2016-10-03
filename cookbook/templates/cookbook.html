@@ -19,6 +19,7 @@
   <script language="javascript" src="{% static "scripts/ingredients-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/ingredient-types-data.js" %}"></script>
   <script language="javascript" src="{% static "scripts/globals.js" %}"></script>
+  <script language="javascript" src="{% static "scripts/dish-backup.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-properties.js" %}"></script>
   <script language="javascript" src="{% static "scripts/dish-presenter.js" %}"></script>
 </head>
@@ -34,9 +35,11 @@
 
 <script>
     var globals = new Globals();
+    var dishBackup = new DishBackup();
     var dishPresenter = new DishPresenter();
     var dishPropertiesHandler = new DishProperies();
 
+    dishBackup.initialize(globals);
     dishPresenter.initialize(globals);
     dishPropertiesHandler.initialize(globals);
 
@@ -50,6 +53,9 @@
         });
         $('#backup-dishes-option').on('tap', function() {
             $('#backup-dishes-popup').popup('open');
+        });
+        $('#upload-dishes-option').on('tap', function() {
+            $('#upload-dishes-popup').popup('open');
         });
 
         // get from server all dish ingreadiens, units and categories

@@ -536,9 +536,15 @@ function RecipeProperties() {
 	    var sectionIndex = parseInt(this.$recipeItemOptions.attr('data-section-index'), 10),
             pointIndex = parseInt(this.$recipeItemOptions.attr('data-point-index'), 10),
             previousText = this.getSectionPoint(sectionIndex, pointIndex).text(),
-	        editPopup = this.$editRecipePointTextPopup;
+	        editPopup = this.$editRecipePointTextPopup,
+            editPopupWidth = $(window).width() - 50;
 	    // close options popup
 	    this.$recipeItemOptions.popup('close');
+        // set proper size of edit popup
+        if (editPopupWidth > 800) {
+            editPopupWidth /= 2;
+        }
+        editPopup.css("width", editPopupWidth  + "px");
 	    // set the section and point index in edit popup
         editPopup.attr('data-section-index', sectionIndex);
         editPopup.attr('data-point-index', pointIndex);

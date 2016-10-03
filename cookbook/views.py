@@ -263,12 +263,22 @@ def backupDishesData(request):
             'name': dish.name,
             'meal': dish.type,
             'photos': [p['file_name'] for p in photos],
-            'ingredients': list(ingredients),
+            'ingredients': [list(i.values()) for i in ingredients],
             'reciepe': json.loads(dish.recipe),
             'categories': [c.category for c in categories],
         })
     data = {
         'result': 'ok',
         'list': dish_list
+    }
+    return JsonResponse(data)
+
+@csrf_protect
+def uploadDishesData(request):
+    if request.GET['password'] != password:
+        return JsonResponse({'result': 'invalid pssword'})
+    # TODO
+    data = {
+        'result': 'ok',
     }
     return JsonResponse(data)

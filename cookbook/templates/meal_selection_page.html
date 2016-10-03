@@ -5,13 +5,23 @@
     <a href="#" id="shopping-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista zakupow</a>
     <a href="#" id="ingredient-list-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a ui-state-disabled">Lista skladnikow</a>
     <a href="#" id="add-dish-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Dodaj danie</a>
+    <br>
     <a href="#" id="backup-dishes-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Backup</a>
+    <a href="#" id="upload-dishes-option" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Upload</a>
   </div>
   <div data-role="popup" id="backup-dishes-popup" data-theme="a" class="ui-corner-all">
     <form style="padding:10px 20px;">
       <h3>Backup wszystkich dań</h3>
       <input id="backup-dishes-password" placeholder="Haslo" value="" type="password">
       <a href="#" id="backup-dishes" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
+    </form>
+  </div>
+  <div data-role="popup" id="upload-dishes-popup" data-theme="a" class="ui-corner-all">
+    <form style="padding:10px 20px;">
+      <h3>Wczytaj backup dań</h3>
+      <input id="upload-dishes-password" placeholder="Haslo" value="" type="password">
+      <input id="upload-dishes-file" placeholder="Plik" value="" type="file">
+      <a href="#" id="upload-dishes" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
     </form>
   </div>
   <div data-role="header">
