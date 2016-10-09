@@ -24,3 +24,32 @@
 #dish-recipe h4 {
     margin-left: 10px;
 }
+
+#dish-done-button {
+    float: right;
+    margin-right: 10px;
+}
+
+#dish-done-slider input {
+    display: none;
+}
+
+#dish-done-slider .ui-slider-track {
+    margin-left: 15px;
+}
+
+#dish-done-text {
+    text-align:center;
+}
+
+#dish-done-slider {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#dish-done-password {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -1,10 +1,11 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString, cleanQuantity, md5*/
+/*global $, jQuery, DishDoneHandler, alert, cleanNameString, cleanQuantity, md5*/
 
 
 function DishPresenter() {
     "use strict";
 
+    this.dishDoneHandler = undefined;
     this.ingredientsData  = undefined;
     this.unitsData  = undefined;
     this.categoriesData  = undefined;
@@ -27,7 +28,10 @@ function DishPresenter() {
         this.ingredientsData  = globals.ingredientsData;
         this.unitsData  = globals.unitsData;
         this.categoriesData  = globals.categoriesData;
-        
+
+        this.dishDoneHandler = new DishDoneHandler();
+        this.dishDoneHandler.initialize(this);
+
         $('.ui-icon-breakfast').on('tap', function () { self.requestDishList(0); });
         $('.ui-icon-soup').on('tap', function () { self.requestDishList(1); });
         $('.ui-icon-dinner').on('tap', function () { self.requestDishList(2); });
@@ -51,11 +55,23 @@ function DishPresenter() {
     this.showDishList = function (data) {
         var text = '',
             self = this,
-            i = 0;
+            i = 0,
+            currentDate = new Date(),
+            currentTime = currentDate.getTime(),
+            millisecondsPerDay = 24 * 60 * 60 * 1000,
+            dishTime,
+            dayDiference;
         for (i in data) {
             if (data.hasOwnProperty(i)) {
+                // calculate difference betwean current date
+                // and the date of last dish preparation
+                dishTime = Date.parse(data[i].last_done_date);
+                dayDiference = (currentTime - dishTime) / millisecondsPerDay;
+                dayDiference = Math.round(dayDiference);
                 text += '<li data-id="' + data[i].id + '" data-image="' + data[i].image + '">' +
-                          '<a href=\"#\">' + data[i].name + '</a>' +
+                          '<a href=\"#\">' + data[i].name +
+                          ' <span class="ui-li-count">' + dayDiference + '</span>' +
+                          '</a>' +
                         '</li>\n';
             }
         }
@@ -176,6 +192,14 @@ function DishPresenter() {
             error: function (data) { alert('Error'); },
             success: function (data) { self.goToHomeScreen(); }
         });
+    };
+
+    this.getCurrentDishId = function () {
+        return this.currentDishId;
+    };
+
+    this.updateDishDoneOffset = function (dishId, doneOffset) {
+        this.$dishList.find('li[data-id=' + dishId + '] span').text(doneOffset);
     };
 
     this.goToHomeScreen = function () {

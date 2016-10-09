@@ -11,7 +11,7 @@ from cookbook.models import DishPhoto
 from cookbook.models import DishCategory
 from cookbook.models import Dish
 from cookbook.models import Category
-from datetime import date
+from datetime import date, timedelta
 import json
 
 password = "96ec3fa8d9749750a629fc2a7ebbc302"
@@ -19,7 +19,7 @@ password = "96ec3fa8d9749750a629fc2a7ebbc302"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2016.09.24',
+        'version': '2016.10.03',
     }
     return HttpResponse(template.render(context, request))
 
@@ -37,7 +37,6 @@ def getDishList(request):
         dish['image'] = ''
         # find photo for current dish
         for photo in photos:
-            print photo['file_name']
             if photo['dish'] == dish['id']:
                 dish['image'] = photo['file_name']
                 break
@@ -189,6 +188,18 @@ def addDishData(request):
 
 def updateDishData(request):
     data = request.GET['data']
+    return JsonResponse({'result': 'ok'})
+
+def updateDishDoneDate(request):
+    dish_id = request.GET['dish_id']
+    try:
+        dish = Dish.objects.get(pk=dish_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'result': 'specified dish is not in data base'})
+    days_offset = int(request.GET['days_offset'])
+    delta = timedelta(days = days_offset)
+    dish.last_done_date = date.today() - delta
+    dish.save()
     return JsonResponse({'result': 'ok'})
 
 def removeDishData(request):
