@@ -64,6 +64,26 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+function adjustPageHeight(pageItem, verticalCenter) {
+    "use strict";
+    var windowHeight = $(window).height(),
+        pageHeaderHeight = pageItem.find('.ui-header').height(),
+        pageFooterHeight = pageItem.find('.ui-footer').height(),
+        pageContetntItem = pageItem.find('.ui-content'),
+        pageMargin = (windowHeight - pageContetntItem.height() -
+                      pageHeaderHeight - pageFooterHeight - 36);
+    if (pageMargin > 0) {
+        if (verticalCenter === true) {
+            pageMargin /= 2;
+            pageContetntItem.css('margin-top', pageMargin + 'px');
+            pageContetntItem.css('margin-bottom', pageMargin + 'px');
+        } else {
+            pageContetntItem.css('margin-bottom', pageMargin + 'px');
+        }
+    }
+}
+
 var csrftoken = getCookie('csrftoken');
 
 function csrfSafeMethod(method) {

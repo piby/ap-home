@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, DishDoneHandler, alert, cleanNameString, cleanQuantity, md5*/
+/*global $, jQuery, DishDoneHandler, alert, adjustPageHeight, cleanQuantity, md5*/
 
 
 function DishPresenter() {
@@ -108,7 +108,8 @@ function DishPresenter() {
     };
 
     this.showDishData = function (dishId, data) {
-        var text,
+        var self = this,
+            text,
             sectionCount,
             section,
             points,
@@ -175,6 +176,13 @@ function DishPresenter() {
         }
         this.$dishKeywords.html(text);
         $.mobile.changePage(this.$dishPage);
+
+        // when dish-done-page is shown we need to center
+        // its content but this have to be done with a delay
+        // as page items wont have proper height right away
+        setTimeout(function () {
+            adjustPageHeight(self.$dishPage, false);
+        }, 200);
     };
     
     this.removeDishData = function () {

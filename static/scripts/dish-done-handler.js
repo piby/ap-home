@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, cleanNameString, md5*/
+/*global $, jQuery, alert, adjustPageHeight, md5*/
 
 function DishDoneHandler() {
     "use strict";
@@ -24,12 +24,22 @@ function DishDoneHandler() {
     ];
 
     this.$dishPage = $('#dish-page');
+    this.$dishDonePage = $('#dish-done-page');
     this.$dishDoneSlider = $('#dish-done-slider');
     this.$dishDoneText = $('#dish-done-text');
 
     this.initialize = function (dishPresenter) {
         var self = this;
         this.dishPresenter = dishPresenter;
+
+        // when dish-done-page is created we need to center
+        // its content but this have to be done with a delay
+        // as page items wont have proper height right away
+        this.$dishDonePage.on("pagecreate", function (event) {
+            setTimeout(function () {
+                adjustPageHeight(self.$dishDonePage, true);
+            }, 200);
+        });
 
         this.$dishDoneSlider.on('slidestop', function (event, ui) {
             var sliderValue = $(this).find('input').val(),

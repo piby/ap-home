@@ -19,7 +19,7 @@ password = "96ec3fa8d9749750a629fc2a7ebbc302"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2016.10.03',
+        'version': '2016.10.14',
     }
     return HttpResponse(template.render(context, request))
 
