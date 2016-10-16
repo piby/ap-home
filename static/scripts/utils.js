@@ -71,9 +71,12 @@ function adjustPageHeight(pageItem, verticalCenter) {
         pageHeaderHeight = pageItem.find('.ui-header').height(),
         pageFooterHeight = pageItem.find('.ui-footer').height(),
         pageContetntItem = pageItem.find('.ui-content'),
+        pageMargin = 0;
+    if (pageContetntItem > 0) {
         pageMargin = (windowHeight - pageContetntItem.height() -
                       pageHeaderHeight - pageFooterHeight - 36);
-    if (pageMargin > 0) {
+    }
+    if (pageMargin > -1) {
         if (verticalCenter === true) {
             pageMargin /= 2;
             pageContetntItem.css('margin-top', pageMargin + 'px');
