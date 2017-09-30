@@ -3,7 +3,7 @@
 import os
 import sys
 
-# make sure the next line points to settings.py:
+# https://docs.openshift.com/online/using_images/s2i_images/python.html
 os.environ['APP_MODULE'] = 'aphome.settings'
 # make sure the next line points to django project dir:
 #sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'aphome'))
