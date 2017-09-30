@@ -72,7 +72,7 @@ function adjustPageHeight(pageItem, verticalCenter) {
         pageFooterHeight = pageItem.find('.ui-footer').height(),
         pageContetntItem = pageItem.find('.ui-content'),
         pageMargin = 0;
-    if (pageContetntItem > 0) {
+    if (pageHeaderHeight > 0) {
         pageMargin = (windowHeight - pageContetntItem.height() -
                       pageHeaderHeight - pageFooterHeight - 36);
     }
