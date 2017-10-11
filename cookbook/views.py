@@ -19,7 +19,7 @@ password = "96ec3fa8d9749750a629fc2a7ebbc302"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2016.10.14',
+        'version': '2017.10.08',
     }
     return HttpResponse(template.render(context, request))
 
@@ -286,10 +286,75 @@ def backupDishesData(request):
 
 @csrf_protect
 def uploadDishesData(request):
-    if request.GET['password'] != password:
-        return JsonResponse({'result': 'invalid pssword'})
+    #if request.POST['password'] != password:
+    #    return JsonResponse({'result': 'invalid pssword'})
+    print request.POST
+    file_content = request.FILES['file'].read()
+    new_data = json.loads(file_content.decode("utf-8"))
+    # process units
+    db_units = IngredientUnit.objects.values_list(
+            'id', 'base_form')
+    db_unit_names = [i[1] for i in db_units]
+    new_units_id_map = {}
+    for send_unit_data in new_data["units"]:
+        send_unit_id = send_unit_data[0]
+        send_unit_base_name = send_unit_data[1]
+        # map id of units that are in db
+        if send_unit_base_name in db_unit_names:
+            db_unit_index = db_unit_names.index(send_unit_base_name)
+            db_unit_id = db_units[db_unit_index][0]
+            new_units_id_map[send_unit_id] = db_unit_id
+            continue
+        # insert unit to db
+        new_unit = IngredientUnit(
+            base_form=send_unit_base_name,
+            fraction_form=send_unit_data[2],
+            quantity=send_unit_data[3],
+            few_form=send_unit_data[4])
+        new_unit.save()        
+        # add this id to map
+        new_units_id_map[send_unit_id] = new_unit.id  
+    # ingredient types
+    # ?????????????????? odtworzyc kategorie na bazie idkow w danych, poprawic tworzenie backupu
+    # process ingredients
+    db_ingredients = Ingredient.objects.values_list(
+            'id', 'name')
+    db_ingredient_names = [i[1] for i in db_ingredients]
+    new_ingredients_id_map = {}
+    for send_ingredient_data in new_data["ingredients"]:
+        send_ingredient_id = send_ingredient_data[0]
+        send_ingredient_name = send_ingredient_data[1]
+        # map id of ingredients that are in db
+        if send_ingredient_name in db_ingredient_names:
+            db_ingredient_index = db_ingredient_names.index(send_ingredient_name)
+            db_ingredient_id = db_ingredients[db_ingredient_index][0]
+            new_ingredients_id_map[send_ingredient_id] = db_ingredient_id
+            continue
+        # check if ingredient unit was mapped
+        ingredient_unit_id = send_ingredient_data[4]
+        if ingredient_unit_id in new_units_id_map:
+            ingredient_unit_id = new_units_id_map[ingredient_unit_id]
+        # find ingredient unit record
+        try:
+            ingredient_unit = IngredientUnit.objects.get(
+                pk__iexact=ingredient_unit_id)
+        except ObjectDoesNotExist:
+            message = "missing {0} ingredient unit".format(ingredient_unit_id)
+            return JsonResponse({'result': message})
+        # insert ingredient to db
+        new_ingredient = Ingredient(
+            name = send_ingredient_name,
+            category_type = 0,
+            default_quantity = send_ingredient_data[3],
+            default_unit = ingredient_unit)
+        new_ingredient.save()        
+        # add this id to map
+        new_ingredients_id_map[send_ingredient_id] = new_ingredient.id 
+    # process categories
     # TODO
-    data = {
+    # process dishes
+    # ...
+    result = {
         'result': 'ok',
     }
-    return JsonResponse(data)
+    return JsonResponse(result)

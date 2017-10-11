@@ -17,10 +17,10 @@
     </form>
   </div>
   <div data-role="popup" id="upload-dishes-popup" data-theme="a" class="ui-corner-all">
-    <form style="padding:10px 20px;">
+    <form style="padding:10px 20px;" enctype="multipart/form-data">
       <h3>Wczytaj backup dań</h3>
       <input id="upload-dishes-password" placeholder="Haslo" value="" type="password">
-      <input id="upload-dishes-file" placeholder="Plik" value="" type="file">
+      <input id="upload-dishes-file" placeholder="Plik" value="" type="file" name="file">
       <a href="#" id="upload-dishes" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-none">Zatwierdz</a>
     </form>
   </div>

@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, FormData, md5*/
+/*global $, alert, FormData, md5*/
 
 
 function DishBackup() {
@@ -83,7 +83,7 @@ function DishBackup() {
     this.requestDishesUpload = function () {
         var self = this,
             password = md5(this.$uploadDishesPassword.val()),
-            backupFile = this.$uploadDishesFile.files[0],       // todo
+            backupFile = this.$uploadDishesFile[0].files[0],
             formData = new FormData();
         formData.append('password', password);
         formData.append('file', backupFile);
@@ -92,6 +92,7 @@ function DishBackup() {
             type: "POST",
             url: "upload-dishes",
             data: formData,
+            cache: false,
             processData: false,
             contentType: false,
             error: function (data) { alert('Error'); },
