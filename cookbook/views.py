@@ -286,9 +286,8 @@ def backupDishesData(request):
 
 @csrf_protect
 def uploadDishesData(request):
-    #if request.POST['password'] != password:
-    #    return JsonResponse({'result': 'invalid pssword'})
-    print request.POST
+    if request.POST['password'] != password:
+        return JsonResponse({'result': 'invalid pssword'})
     file_content = request.FILES['file'].read()
     new_data = json.loads(file_content.decode("utf-8"))
     # process units
@@ -299,7 +298,7 @@ def uploadDishesData(request):
     for send_unit_data in new_data["units"]:
         send_unit_id = send_unit_data[0]
         send_unit_base_name = send_unit_data[1]
-        # map id of units that are in db
+        # if this unit name is already in db just map the id
         if send_unit_base_name in db_unit_names:
             db_unit_index = db_unit_names.index(send_unit_base_name)
             db_unit_id = db_units[db_unit_index][0]
@@ -314,8 +313,25 @@ def uploadDishesData(request):
         new_unit.save()        
         # add this id to map
         new_units_id_map[send_unit_id] = new_unit.id  
-    # ingredient types
-    # ?????????????????? odtworzyc kategorie na bazie idkow w danych, poprawic tworzenie backupu
+    # process types
+    db_ingredient_types = IngredientType.objects.values_list(
+            'id', 'name')
+    db_ingredient_types_names = [i[1] for i in db_ingredient_types]
+    new_ingredient_types_id_map = {}
+    for send_ingredient_type_data in new_data["ingredient_types"]:
+        send_type_id = send_ingredient_type_data[0]
+        send_type_name = send_ingredient_type_data[1]
+        # if this type name is already in db just map the id
+        if send_type_name in db_ingredient_types_names:
+            db_type_index = db_ingredient_types_names.index(send_type_name)
+            db_type_id = db_ingredient_types[db_unit_index][0]
+            new_ingredient_types_id_map[send_type_id] = db_type_id
+            continue
+        # insert type to db
+        new_type = IngredientType(name=send_type_name)
+        new_type.save()        
+        # add this id to map
+        new_ingredient_types_id_map[send_type_id] = new_type.id
     # process ingredients
     db_ingredients = Ingredient.objects.values_list(
             'id', 'name')
@@ -330,10 +346,17 @@ def uploadDishesData(request):
             db_ingredient_id = db_ingredients[db_ingredient_index][0]
             new_ingredients_id_map[send_ingredient_id] = db_ingredient_id
             continue
-        # check if ingredient unit was mapped
-        ingredient_unit_id = send_ingredient_data[4]
-        if ingredient_unit_id in new_units_id_map:
-            ingredient_unit_id = new_units_id_map[ingredient_unit_id]
+        # if ingredient_type was mapped use mapped id, orherwise use send id
+        ingredient_type_id = new_ingredient_types_id_map.get(ingredient_type_id, send_ingredient_data[2])
+        # find ingredient_type record
+        try:
+            ingredient_type = IngredientType.objects.get(
+                pk__iexact=ingredient_type_id)
+        except ObjectDoesNotExist:
+            message = "missing {0} ingredient type".format(ingredient_type_id)
+            return JsonResponse({'result': message})
+        # if ingredient unit was mapped use mapped id, orherwise use send id
+        ingredient_unit_id = new_units_id_map.get(ingredient_unit_id, send_ingredient_data[4])
         # find ingredient unit record
         try:
             ingredient_unit = IngredientUnit.objects.get(
@@ -344,7 +367,7 @@ def uploadDishesData(request):
         # insert ingredient to db
         new_ingredient = Ingredient(
             name = send_ingredient_name,
-            category_type = 0,
+            category_type = ingredient_type,
             default_quantity = send_ingredient_data[3],
             default_unit = ingredient_unit)
         new_ingredient.save()        
@@ -353,7 +376,14 @@ def uploadDishesData(request):
     # process categories
     # TODO
     # process dishes
-    # ...
+    db_dishes = Dish.objects.values_list(
+            'id', 'name')
+    db_dish_names = [i[1] for i in db_dishes]
+    new_dshes_id_map = {}
+    for send_dish_data in new_data["dishes"]:
+        send_dish_id = send_dish_data[0]
+        send_dish_name = send_dish_data[1]
+        # ...
     result = {
         'result': 'ok',
     }

@@ -15,7 +15,7 @@ class IngredientType(models.Model):
     
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
-    category_type = models.ForeignKey(IngredientType)
+    category_type = models.ForeignKey(IngredientType) # TODO: rename to type
     default_quantity = models.DecimalField(max_digits=5, decimal_places=2)
     default_unit = models.ForeignKey(IngredientUnit)
     def __str__(self):   
@@ -30,12 +30,13 @@ class Dish(models.Model):
     )
     name = models.CharField(max_length=150)
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
+    #photo = models.CharField(max_length=200) # TODO: add to table
     recipe = models.CharField(max_length=4000)
     last_done_date = models.DateField()
     def __str__(self):   
         return self.name
 
-class DishPhoto(models.Model):
+class DishPhoto(models.Model): # TODO: remove table
     dish = models.ForeignKey(Dish)
     file_name = models.CharField(max_length=200)
     sequential_number = models.CharField(max_length=1)

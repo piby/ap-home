@@ -5,9 +5,10 @@
 function DishBackup() {
     "use strict";
 
-    this.ingredientsData  = undefined;
-    this.unitsData  = undefined;
-    this.categoriesData  = undefined;
+    this.ingredientsData = undefined;
+    this.ingredientTypesData = undefined;
+    this.unitsData = undefined;
+    this.categoriesData = undefined;
 
     this.$backupDishesPopup = $('#backup-dishes-popup');
     this.$uploadDishesPopup = $('#upload-dishes-popup');
@@ -18,6 +19,7 @@ function DishBackup() {
     this.initialize = function (globals) {
         var self = this;
         this.ingredientsData  = globals.ingredientsData;
+        this.ingredientTypesData  = globals.ingredientTypesData;
         this.unitsData  = globals.unitsData;
         this.categoriesData  = globals.categoriesData;
         
@@ -64,6 +66,7 @@ function DishBackup() {
         dataToSerialize = {
             units: this.unitsData.data,
             categories: this.categoriesData.data,
+            ingredient_types: this.ingredientTypesData.data,
             ingredients: this.ingredientsData.data,
             dishes: data.list
         };
