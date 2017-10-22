@@ -3,11 +3,11 @@ from django.http import JsonResponse
 from django.template import RequestContext, loader
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from cookbook.models import IngredientUnit
 from cookbook.models import IngredientType
 from cookbook.models import Ingredient
 from cookbook.models import DishIngredient
-from cookbook.models import DishPhoto
 from cookbook.models import DishCategory
 from cookbook.models import Dish
 from cookbook.models import Category
@@ -27,19 +27,9 @@ def getDishList(request):
     meal_type = request.GET['meal']
     dishes = Dish.objects\
         .filter(type=meal_type)\
-        .values('id', 'name', 'last_done_date')\
+        .values('id', 'name', 'photo', 'last_done_date')\
         .order_by('name')
-    photos = DishPhoto.objects\
-        .values('dish', 'file_name')
     dishList = list(dishes)
-    # add image file name to every dish
-    for dish in dishList:
-        dish['image'] = ''
-        # find photo for current dish
-        for photo in photos:
-            if photo['dish'] == dish['id']:
-                dish['image'] = photo['file_name']
-                break
     return JsonResponse(dishList, safe=False)
 
 def getDishData(request):
@@ -48,10 +38,6 @@ def getDishData(request):
         dish = Dish.objects.get(pk=requested_id)
     except ObjectDoesNotExist:
         return JsonResponse({'result': 'specified dish is not in data base'})
-    photos = DishPhoto.objects\
-        .filter(dish=dish)\
-        .values('file_name', 'sequential_number')\
-        .order_by('sequential_number')
     ingredients = DishIngredient.objects\
         .filter(dish=dish)\
         .values()\
@@ -63,7 +49,7 @@ def getDishData(request):
     return JsonResponse({
         'name': dish.name,
         'meal': dish.type,
-        'photos': [p['file_name'] for p in photos],
+        'photo': dish.photo,
         'ingredients': list(ingredients),
         'reciepe': json.loads(dish.recipe),
         'categories': [c.category for c in categories],
@@ -93,7 +79,7 @@ def addDishData(request):
         name=general_data['name'],
         type=general_data['type'],
         recipe=json.dumps(recipe_data),
-        last_done_date=date(2000, 1, 1))
+        last_done_date=date(2017, 1, 1))
     dish.save()
     # process new ingredients definitions
     if ingredients_data['added']:
@@ -210,7 +196,6 @@ def removeDishData(request):
         dish = Dish.objects.get(pk=requested_id)
     except ObjectDoesNotExist:
         return JsonResponse({'result': 'specified dish is not in data base'})
-    DishPhoto.objects.filter(dish=dish).delete()
     DishIngredient.objects.filter(dish=dish).delete()
     DishCategory.objects.filter(dish=dish).delete()
     dish.delete()
@@ -251,7 +236,6 @@ def backupDishesData(request):
         return JsonResponse({'result': 'invalid pssword'})
     dishes = Dish.objects.all()
     dishes_ingredients = DishIngredient.objects.all()
-    dishes_photos = DishPhoto.objects.all()
     dishes_categories = DishCategory.objects.all()
     dish_list = []
     # create array containing all dishes
@@ -261,11 +245,6 @@ def backupDishesData(request):
             .values('unit_id', 'sequential_number', 'ingredient_id', 'quantity')\
             .order_by('sequential_number')\
             .values('unit_id', 'ingredient_id', 'quantity')
-        photos = dishes_photos\
-            .filter(dish=dish)\
-            .values('file_name', 'sequential_number')\
-            .order_by('sequential_number')\
-            .values('file_name')
         categories = dishes_categories\
             .filter(dish=dish)\
             .values()\
@@ -273,9 +252,9 @@ def backupDishesData(request):
         dish_list.append({
             'name': dish.name,
             'meal': dish.type,
-            'photos': [p['file_name'] for p in photos],
+            'photo': dish.photo,
             'ingredients': [list(i.values()) for i in ingredients],
-            'reciepe': json.loads(dish.recipe),
+            'recipe': json.loads(dish.recipe),
             'categories': [c.category for c in categories],
         })
     data = {
@@ -294,96 +273,118 @@ def uploadDishesData(request):
     db_units = IngredientUnit.objects.values_list(
             'id', 'base_form')
     db_unit_names = [i[1] for i in db_units]
-    new_units_id_map = {}
-    for send_unit_data in new_data["units"]:
-        send_unit_id = send_unit_data[0]
-        send_unit_base_name = send_unit_data[1]
-        # if this unit name is already in db just map the id
-        if send_unit_base_name in db_unit_names:
-            db_unit_index = db_unit_names.index(send_unit_base_name)
-            db_unit_id = db_units[db_unit_index][0]
-            new_units_id_map[send_unit_id] = db_unit_id
-            continue
-        # insert unit to db
-        new_unit = IngredientUnit(
-            base_form=send_unit_base_name,
-            fraction_form=send_unit_data[2],
-            quantity=send_unit_data[3],
-            few_form=send_unit_data[4])
-        new_unit.save()        
-        # add this id to map
-        new_units_id_map[send_unit_id] = new_unit.id  
-    # process types
+    new_units_name_map = {}
+    with transaction.atomic():
+        for send_unit_data in new_data["units"]:
+            send_unit_id = send_unit_data[0]
+            send_unit_base_name = send_unit_data[1]
+            new_units_name_map[send_unit_base_name] = send_unit_id
+            # if this unit name is already in db just skip it
+            if send_unit_base_name in db_unit_names:
+                continue
+            # insert unit to db
+            new_unit = IngredientUnit(
+                base_form=send_unit_base_name,
+                fraction_form=send_unit_data[2],
+                few_form=send_unit_data[3],
+                many_form=send_unit_data[4])
+            new_unit.save()
+    # process ingredient types
     db_ingredient_types = IngredientType.objects.values_list(
             'id', 'name')
     db_ingredient_types_names = [i[1] for i in db_ingredient_types]
+    new_ingredient_types_name_map = {}
+    with transaction.atomic():
+        for send_ingredient_type_data in new_data["ingredient_types"]:
+            send_type_id = send_ingredient_type_data[0]
+            send_type_name = send_ingredient_type_data[1]
+            new_ingredient_types_name_map[send_type_name] = send_type_id
+            # skip type name that already is in db
+            if send_type_name in db_ingredient_types_names:
+                continue
+            # insert type to db
+            new_type = IngredientType(name=send_type_name)
+            new_type.save()
+    # construct maping of id from uploaded data to id in data base
+    with transaction.atomic():
+        db_units = IngredientUnit.objects.values_list(
+            'base_form', 'id')
+        db_ingredient_types = IngredientType.objects.values_list(
+            'name', 'id')
+    new_units_id_map = {}
+    for name, db_id in db_units:
+        send_id = new_units_name_map.get(name, db_id)
+        new_units_id_map[send_id] = db_id
     new_ingredient_types_id_map = {}
-    for send_ingredient_type_data in new_data["ingredient_types"]:
-        send_type_id = send_ingredient_type_data[0]
-        send_type_name = send_ingredient_type_data[1]
-        # if this type name is already in db just map the id
-        if send_type_name in db_ingredient_types_names:
-            db_type_index = db_ingredient_types_names.index(send_type_name)
-            db_type_id = db_ingredient_types[db_unit_index][0]
-            new_ingredient_types_id_map[send_type_id] = db_type_id
-            continue
-        # insert type to db
-        new_type = IngredientType(name=send_type_name)
-        new_type.save()        
-        # add this id to map
-        new_ingredient_types_id_map[send_type_id] = new_type.id
+    for name, db_id in db_ingredient_types:
+        send_id = new_ingredient_types_name_map.get(name, db_id)
+        new_ingredient_types_id_map[send_id] = db_id
     # process ingredients
     db_ingredients = Ingredient.objects.values_list(
             'id', 'name')
     db_ingredient_names = [i[1] for i in db_ingredients]
-    new_ingredients_id_map = {}
-    for send_ingredient_data in new_data["ingredients"]:
-        send_ingredient_id = send_ingredient_data[0]
-        send_ingredient_name = send_ingredient_data[1]
-        # map id of ingredients that are in db
-        if send_ingredient_name in db_ingredient_names:
-            db_ingredient_index = db_ingredient_names.index(send_ingredient_name)
-            db_ingredient_id = db_ingredients[db_ingredient_index][0]
-            new_ingredients_id_map[send_ingredient_id] = db_ingredient_id
-            continue
-        # if ingredient_type was mapped use mapped id, orherwise use send id
-        ingredient_type_id = new_ingredient_types_id_map.get(ingredient_type_id, send_ingredient_data[2])
-        # find ingredient_type record
-        try:
-            ingredient_type = IngredientType.objects.get(
-                pk__iexact=ingredient_type_id)
-        except ObjectDoesNotExist:
-            message = "missing {0} ingredient type".format(ingredient_type_id)
-            return JsonResponse({'result': message})
-        # if ingredient unit was mapped use mapped id, orherwise use send id
-        ingredient_unit_id = new_units_id_map.get(ingredient_unit_id, send_ingredient_data[4])
-        # find ingredient unit record
-        try:
-            ingredient_unit = IngredientUnit.objects.get(
-                pk__iexact=ingredient_unit_id)
-        except ObjectDoesNotExist:
-            message = "missing {0} ingredient unit".format(ingredient_unit_id)
-            return JsonResponse({'result': message})
-        # insert ingredient to db
-        new_ingredient = Ingredient(
-            name = send_ingredient_name,
-            category_type = ingredient_type,
-            default_quantity = send_ingredient_data[3],
-            default_unit = ingredient_unit)
-        new_ingredient.save()        
-        # add this id to map
-        new_ingredients_id_map[send_ingredient_id] = new_ingredient.id 
+    new_ingredients_name_map = {}
+    with transaction.atomic():
+        for send_ingredient_data in new_data["ingredients"]:
+            send_ingredient_id = send_ingredient_data[0]
+            send_ingredient_name = send_ingredient_data[1]
+            new_ingredients_name_map[send_ingredient_name] = send_ingredient_id
+            # skip ingredient that already is in db
+            if send_ingredient_name in db_ingredient_names:
+                continue
+            # if ingredient_type was mapped use mapped id, orherwise use send id
+            ingredient_type_id = new_ingredient_types_id_map[send_ingredient_data[2]]
+            # if ingredient unit was mapped use mapped id, orherwise use send id
+            ingredient_unit_id = new_units_id_map[send_ingredient_data[4]]
+             # insert ingredient to db
+            new_ingredient = Ingredient(
+                name = send_ingredient_name,
+                category_type_id = ingredient_type_id,
+                default_quantity = send_ingredient_data[3],
+                default_unit_id = ingredient_unit_id)
+            new_ingredient.save()
     # process categories
     # TODO
+    # construct maping of id from uploaded ingredients data to id in data base
+    db_ingredients = Ingredient.objects.values_list(
+        'name', 'id')
+    new_ingredients_id_map = {}
+    for name, db_id in db_ingredients:
+        send_id = new_ingredients_name_map.get(name, db_id)
+        new_ingredients_id_map[send_id] = db_id
     # process dishes
     db_dishes = Dish.objects.values_list(
             'id', 'name')
     db_dish_names = [i[1] for i in db_dishes]
-    new_dshes_id_map = {}
     for send_dish_data in new_data["dishes"]:
-        send_dish_id = send_dish_data[0]
-        send_dish_name = send_dish_data[1]
-        # ...
+        send_dish_name = send_dish_data[u'name']
+        # skip dishes that are in db
+        if send_dish_name in db_dish_names:
+            continue
+        photo = send_dish_data[u'photos'][0] if len(send_dish_data[u'photos']) else "" # TODO: remove
+        # add dish to db
+        new_dish = Dish(
+            name=send_dish_name,
+            type=send_dish_data[u'meal'],
+            photo=photo,    # TODO: change to: send_dish_data[u'meal'],
+            recipe=json.dumps(send_dish_data[u'recipe']),
+            last_done_date=date(2017, 1, 1))
+        new_dish.save()
+        # add dsh ingredients to db
+        order_index = 1
+        with transaction.atomic():
+            for send_dish_ingredient_data in send_dish_data[u'ingredients']:
+                unit_id = new_units_id_map[send_dish_ingredient_data[0]]
+                ingredient_id = new_ingredients_id_map[send_dish_ingredient_data[1]]
+                dish_ingredient = DishIngredient(
+                    dish=new_dish,
+                    ingredient_id=ingredient_id,
+                    quantity=send_dish_ingredient_data[2],
+                    unit_id=unit_id,
+                    sequential_number=chr(order_index))
+                dish_ingredient.save()
+                order_index += 1
+        # TODO add dish categories to db
     result = {
         'result': 'ok',
     }

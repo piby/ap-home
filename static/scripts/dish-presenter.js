@@ -68,7 +68,7 @@ function DishPresenter() {
                 dishTime = Date.parse(data[i].last_done_date);
                 dayDiference = (currentTime - dishTime) / millisecondsPerDay;
                 dayDiference = Math.round(dayDiference);
-                text += '<li data-id="' + data[i].id + '" data-image="' + data[i].image + '">' +
+                text += '<li data-id="' + data[i].id + '" data-image="' + data[i].photo + '">' +
                           '<a href=\"#\">' + data[i].name +
                           ' <span class="ui-li-count">' + dayDiference + '</span>' +
                           '</a>' +

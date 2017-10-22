@@ -99,7 +99,7 @@ function DishBackup() {
             processData: false,
             contentType: false,
             error: function (data) { alert('Error'); },
-            success: function (data) { alert('OK'); }
+            success: function (data) { alert(data.result); }
         });
     };
     

@@ -30,18 +30,11 @@ class Dish(models.Model):
     )
     name = models.CharField(max_length=150)
     type = models.CharField(max_length=1, choices=MEAL_TYPES)
-    #photo = models.CharField(max_length=200) # TODO: add to table
+    photo = models.CharField(max_length=200)
     recipe = models.CharField(max_length=4000)
     last_done_date = models.DateField()
     def __str__(self):   
         return self.name
-
-class DishPhoto(models.Model): # TODO: remove table
-    dish = models.ForeignKey(Dish)
-    file_name = models.CharField(max_length=200)
-    sequential_number = models.CharField(max_length=1)
-    def __str__(self):   
-        return self.file_name
     
 class DishIngredient(models.Model):
     dish = models.ForeignKey(Dish)
