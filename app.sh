@@ -1,14 +1,8 @@
-#!/usr/bin/env python
+#!/bin/bash
 
-import os
-import sys
+ARGS=""
 
-# https://docs.openshift.com/online/using_images/s2i_images/python.html
-os.environ['APP_MODULE'] = 'aphome.settings'
-# make sure the next line points to django project dir:
-#sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'aphome'))
-#from distutils.sysconfig import get_python_lib
-#os.environ['PYTHON_EGG_CACHE'] = get_python_lib()
+ARGS="$ARGS --log-to-terminal"
+ARGS="$ARGS --port 8080"
 
-#import django.core.wsgi
-#application = django.core.wsgi.get_wsgi_application()
+exec mod_wsgi-express start-server $ARGS wsgi/application
