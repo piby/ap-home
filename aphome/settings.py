@@ -9,24 +9,21 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 import os
-DJ_PROJECT_DIR = os.path.dirname(__file__)
-BASE_DIR = os.path.dirname(DJ_PROJECT_DIR)
-WSGI_DIR = os.path.dirname(BASE_DIR)
-REPO_DIR = os.path.dirname(WSGI_DIR)
-DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'abcdef'
+# SECURITY WARNING: keep the secret key used in production secret!
+# The SECRET_KEY is provided via an environment variable in OpenShift
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    # safe value used for development when DJANGO_SECRET_KEY might not be set
+    '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'True'
 
 from socket import gethostname
-ALLOWED_HOSTS = [
-    gethostname(), # For internal OpenShift load balancer security purposes.
-    os.environ.get('OPENSHIFT_APP_DNS'), # Dynamically map to the OpenShift gear name.
-    #'example.com', # First DNS alias (set up in the app)
-    #'www.example.com', # Second DNS alias (set up in the app)
-]
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -41,13 +38,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
+    #'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'aphome.urls'
@@ -74,12 +73,18 @@ WSGI_APPLICATION = 'aphome.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+from . import database
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': database.config()
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -94,30 +99,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-    },
-}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(WSGI_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    '/var/www/static/',
-)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'staticfiles')
+]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+INTERNAL_IPS = ['127.0.0.1']
