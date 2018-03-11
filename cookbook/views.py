@@ -19,7 +19,7 @@ password = "96ec3fa8d9749750a629fc2a7ebbc302"
 def index(request):
     template = loader.get_template('cookbook.html')
     context = {
-        'version': '2017.10.08',
+        'version': '2018.03.11',
     }
     return HttpResponse(template.render(context, request))
 
@@ -361,12 +361,11 @@ def uploadDishesData(request):
         # skip dishes that are in db
         if send_dish_name in db_dish_names:
             continue
-        photo = send_dish_data[u'photos'][0] if len(send_dish_data[u'photos']) else "" # TODO: remove
         # add dish to db
         new_dish = Dish(
             name=send_dish_name,
             type=send_dish_data[u'meal'],
-            photo=photo,    # TODO: change to: send_dish_data[u'meal'],
+            photo=send_dish_data[u'photo'],
             recipe=json.dumps(send_dish_data[u'recipe']),
             last_done_date=date(2017, 1, 1))
         new_dish.save()
@@ -374,8 +373,8 @@ def uploadDishesData(request):
         order_index = 1
         with transaction.atomic():
             for send_dish_ingredient_data in send_dish_data[u'ingredients']:
-                unit_id = new_units_id_map[send_dish_ingredient_data[0]]
-                ingredient_id = new_ingredients_id_map[send_dish_ingredient_data[1]]
+                ingredient_id = new_ingredients_id_map[send_dish_ingredient_data[0]]
+                unit_id = new_units_id_map[send_dish_ingredient_data[1]]
                 dish_ingredient = DishIngredient(
                     dish=new_dish,
                     ingredient_id=ingredient_id,
