@@ -6,10 +6,11 @@ function DishPresenter() {
     "use strict";
 
     this.dishDoneHandler = undefined;
-    this.ingredientsData  = undefined;
-    this.unitsData  = undefined;
-    this.categoriesData  = undefined;
+    this.ingredientsData = undefined;
+    this.unitsData = undefined;
+    this.categoriesData = undefined;
     this.currentDishId = undefined;
+    this.dishImagePath = undefined;
 
     this.$dishList = $('#dish-list');
     this.$dishHeader = $('#dish-page div h1');
@@ -23,11 +24,12 @@ function DishPresenter() {
     this.$dishPage = $('#dish-page');
     this.$mealSelectionPage = $("#meal-selection-page");
 
-    this.initialize = function (globals) {
+    this.initialize = function (globals, dishImagePath) {
         var self = this;
-        this.ingredientsData  = globals.ingredientsData;
-        this.unitsData  = globals.unitsData;
-        this.categoriesData  = globals.categoriesData;
+        this.ingredientsData = globals.ingredientsData;
+        this.unitsData = globals.unitsData;
+        this.categoriesData = globals.categoriesData;
+        this.dishImagePath = dishImagePath;
 
         this.dishDoneHandler = new DishDoneHandler();
         this.dishDoneHandler.initialize(this);
@@ -92,7 +94,7 @@ function DishPresenter() {
 
     this.requestDishData = function (dishId, dishImage) {
         var self = this,
-            imagePath = '/static/images/dish/';
+        imagePath = this.dishImagePath;
         // download image
         imagePath += (dishImage === '') ? 'noimage.jpg' : dishImage;
         this.$dishPhoto.attr('src', imagePath);

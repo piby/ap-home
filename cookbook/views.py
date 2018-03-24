@@ -13,6 +13,7 @@ from cookbook.models import Dish
 from cookbook.models import Category
 from datetime import date, timedelta
 import json
+import os
 
 password = "96ec3fa8d9749750a629fc2a7ebbc302"
 
@@ -20,6 +21,7 @@ def index(request):
     template = loader.get_template('cookbook.html')
     context = {
         'version': '2018.03.11',
+        'dish_images_path': os.getenv('DISH_IMAGES_PATH', '/static/images/dish/')
     }
     return HttpResponse(template.render(context, request))
 
