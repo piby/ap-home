@@ -24,12 +24,12 @@ function DishPresenter() {
     this.$dishPage = $('#dish-page');
     this.$mealSelectionPage = $("#meal-selection-page");
 
-    this.initialize = function (globals, dishImagePath) {
+    this.initialize = function (globals) {
         var self = this;
         this.ingredientsData = globals.ingredientsData;
         this.unitsData = globals.unitsData;
         this.categoriesData = globals.categoriesData;
-        this.dishImagePath = dishImagePath;
+        this.dishImagePath = 'media/';
 
         this.dishDoneHandler = new DishDoneHandler();
         this.dishDoneHandler.initialize(this);

@@ -103,6 +103,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'staticfiles')
 ]
 
+MEDIA_URL = 'cookbook/media/'
+MEDIA_ROOT = os.getenv('DISH_IMAGES_ROOT', '')
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INTERNAL_IPS = ['127.0.0.1']
