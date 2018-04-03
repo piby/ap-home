@@ -1,4 +1,6 @@
 from django.conf.urls import url
+from django.views.static import serve
+from django.conf import settings
 
 from . import views
 
@@ -12,5 +14,8 @@ urlpatterns = [
     url(r'^remove-dish-data$', views.removeDishData, name='removeDishData'),
     url(r'^backup-dishes$', views.backupDishesData, name='backupDishesData'),
     url(r'^upload-dishes$', views.uploadDishesData, name='uploadDishesData'),
-    url(r'^get-components$', views.getComponents, name='getComponents')
+    url(r'^get-components$', views.getComponents, name='getComponents'),
+    url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+            }),
 ]
